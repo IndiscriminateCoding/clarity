@@ -1,7 +1,7 @@
 ## Clarity - functional programming library for OCaml
 ### Description
 
-The goal of this project is to make pure functional programming idioms as useful as possible given OCaml's absense of higher-kinded types and typeclasses.
+The goal of this project is to make pure functional programming idioms as useful as possible given OCaml's absence of higher-kinded types and typeclasses.
 
 ### Main features are:
 * Standard "classes" like Functor-Applicative-Monad
