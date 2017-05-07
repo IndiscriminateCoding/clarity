@@ -1,3 +1,4 @@
 # jbuilder files
 _build/
 clarity.install
+*/.merlin
