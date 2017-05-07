@@ -13,8 +13,9 @@ let bimap lf rf = function
   | Both (l, r) -> Both (lf l, rf r)
 
 module Make(S : Semigroup.S) = struct
+  type nonrec 'a t = (S.t, 'a) t
   include Monad.Make(struct
-    type nonrec 'a t = (S.t, 'a) t
+    type nonrec 'a t = 'a t
 
     let pure x = Right x
     let bind f = function

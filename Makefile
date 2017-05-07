@@ -7,9 +7,12 @@ install:
 uninstall:
 	jbuilder uninstall
 
-clean:
-	rm -r _build/
-	rm clarity.install
+doc:
+	ocamlbuild -I lib lib.docdir/index.html
+	cp style.css lib.docdir/
 
-.PHONY: build install uninstall clean
+clean:
+	rm -rf _build/ lib.docdir clarity.install lib/.merlin
+
+.PHONY: build install uninstall doc clean
 

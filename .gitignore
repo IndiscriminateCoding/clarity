@@ -2,3 +2,6 @@
 _build/
 clarity.install
 */.merlin
+
+# documentation dir
+lib.docdir
