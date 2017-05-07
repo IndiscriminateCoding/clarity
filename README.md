@@ -8,6 +8,10 @@ The goal of this project is to make pure functional programming idioms as useful
 * Concrete instances like Reader-Writer-State
 * Useful data types like Either or These
 
-### Installation:
+### Documentation
+
+You can find ocamldoc [here](https://indiscriminatecoding.github.io/clarity-docs/).
+
+### Installation
     $ make install
 
