@@ -34,8 +34,7 @@ module type S3 = sig
   val void : ('p, 'q, 'a) t -> ('p, 'q, unit) t
 end
 
-module Make3(F : Basic3)
-  : S3 with type ('p, 'q, 'a) t := ('p, 'q, 'a) F.t = struct
+module Make3(F : Basic3) = struct
   include F
   open Fn
 
@@ -44,14 +43,14 @@ module Make3(F : Basic3)
   let void x = replace () x
 end
 
-module Make2(F : Basic2) : S2 with type ('p, 'a) t := ('p, 'a) F.t = struct
+module Make2(F : Basic2) = struct
   include(Make3(struct
     type (_, 'p, 'a) t = ('p, 'a) F.t
     include (F : Basic2 with type ('p, 'a) t := ('p, 'a) F.t)
   end))
 end
 
-module Make(F : Basic) : S with type 'a t := 'a F.t = struct
+module Make(F : Basic) = struct
   include(Make2(struct
     type (_, 'a) t = 'a F.t
     include (F : Basic with type 'a t := 'a F.t)

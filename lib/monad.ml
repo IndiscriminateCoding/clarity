@@ -41,8 +41,7 @@ module type S3 = sig
     ('b -> ('p, 'q, 'c) t) -> ('a -> ('p, 'q, 'b) t) -> 'a -> ('p, 'q, 'c) t
 end
 
-module Make3(M : Basic3)
-  : S3 with type ('p, 'q, 'a) t := ('p, 'q, 'a) M.t = struct
+module Make3(M : Basic3) = struct
   include Applicative.Make3(M)
   include M
 
@@ -51,14 +50,14 @@ module Make3(M : Basic3)
   let mcompose f g x = g x >>= f
 end
 
-module Make2(M : Basic2) : S2 with type ('p, 'a) t := ('p, 'a) M.t = struct
+module Make2(M : Basic2) = struct
   include(Make3(struct
     type (_, 'p, 'a) t = ('p, 'a) M.t
     include (M : Basic2 with type ('p, 'a) t := ('p, 'a) M.t)
   end))
 end
 
-module Make(M : Basic) : S with type 'a t := 'a M.t = struct
+module Make(M : Basic) = struct
   include(Make2(struct
     type (_, 'a) t = 'a M.t
     include (M : Basic with type 'a t := 'a M.t)

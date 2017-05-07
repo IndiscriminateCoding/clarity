@@ -57,8 +57,7 @@ module type S3 = sig
   val forever : ('p, 'q, 'a) t -> ('p, 'q, 'b) t
 end
 
-module Make3(A : Basic3)
-  : S3 with type ('p, 'q, 'a) t := ('p, 'q, 'a) A.t = struct
+module Make3(A : Basic3) = struct
   open Fn
   include Functor.Make3(A)
   include A
@@ -83,14 +82,14 @@ module Make3(A : Basic3)
   let rec forever x = discard_left x (forever @! x)
 end
 
-module Make2(A : Basic2) : S2 with type ('p, 'a) t := ('p, 'a) A.t = struct
+module Make2(A : Basic2) = struct
   include(Make3(struct
     type (_, 'p, 'a) t = ('p, 'a) A.t
     include (A : Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
   end))
 end
 
-module Make(A : Basic) : S with type 'a t := 'a A.t = struct
+module Make(A : Basic) = struct
   include(Make2(struct
     type (_, 'a) t = 'a A.t
     include (A : Basic with type 'a t := 'a A.t)
