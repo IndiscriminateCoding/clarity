@@ -6,13 +6,12 @@ end
 module Align = Align
 module Applicative = Applicative
 module Clarity = Clarity
-module Clarity_list = Clarity_list
 module Either = Either
 module Fn = Fn
 module Foldable = Foldable
 module Functor = Functor
 module Id = Id
-module List = List
+module List = Clarity_list
 module Monad = Monad
 module Monoid = Monoid
 module Option = Option
