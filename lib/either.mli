@@ -1,3 +1,4 @@
+(** Either.t represents value of two exclusive possibilities *)
 type ('l, 'r) t =
   Left of 'l | Right of 'r
 

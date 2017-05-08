@@ -1,3 +1,5 @@
+(** Traversable signatures *)
+
 module type S = sig
   type _ t
   type _ f

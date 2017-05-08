@@ -1,3 +1,4 @@
+(** Monad instance for an option type *)
 type 'a t = 'a option
 
 val _None : 'a option

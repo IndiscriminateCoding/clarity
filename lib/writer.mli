@@ -1,3 +1,4 @@
+(** Writer monad *)
 module Make : functor (M : Monoid.S) -> sig
   include Monad.S
 

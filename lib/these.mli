@@ -1,3 +1,4 @@
+(** Values of two non-exclusive varians *)
 type ('l, 'r) t =
   Left of 'l | Right of 'r | Both of 'l * 'r
 
@@ -5,6 +6,7 @@ val _Left : 'a -> ('a, 'b) t
 val _Right : 'a -> ('b, 'a) t
 val _Both : 'a -> 'b -> ('a, 'b) t
 
+(** Monad instance requires Semigroup to combine Left values *)
 module Make (S : Semigroup.S) : Monad.S with type 'a t = (S.t, 'a) t
 
 val bimap : ('a -> 'b) -> ('c -> 'd) -> ('a, 'c) t -> ('b, 'd) t

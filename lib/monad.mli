@@ -1,3 +1,5 @@
+(** Monads *)
+
 module type Basic = sig
   include Applicative.Basic
   val bind : ('a -> 'b t) -> 'a t -> 'b t

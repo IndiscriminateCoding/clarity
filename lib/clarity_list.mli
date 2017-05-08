@@ -1,3 +1,5 @@
+(** List data type *)
+
 type 'a t = 'a list
 
 val _Cons : 'a -> 'a list -> 'a list
@@ -9,6 +11,11 @@ val mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
 val rev : 'a t -> 'a t
 val rev_map : ('a -> 'b) -> 'a t -> 'b t
 val rev_mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
+
+(**
+  Stable sort with supplied comparision function, default is
+  Pervasives.compare
+  *)
 val sort : ?cmp:('a -> 'a -> int) -> 'a t -> 'a t
 
 include Monad.S with type 'a t := 'a t

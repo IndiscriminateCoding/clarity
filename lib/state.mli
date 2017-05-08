@@ -1,3 +1,4 @@
+(** State monad *)
 include Monad.S2
 
 external run : ('s, 'a) t -> 's -> 's * 'a = "%identity"

@@ -1,3 +1,5 @@
+(** Applicative functors *)
+
 module type Basic = sig
   include Functor.Basic
   val pure : 'a -> 'a t

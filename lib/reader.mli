@@ -1,3 +1,4 @@
+(** Reader monad *)
 include Monad.S2
 
 external run : ('r, 'a) t -> 'r -> 'a = "%identity"

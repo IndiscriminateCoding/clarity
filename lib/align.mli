@@ -1,3 +1,5 @@
+(** Zip datatypes with non-uniform shapes using These.t *)
+
 module type Basic = sig
   type 'a t
   val align_with : (('a, 'b) These.t -> 'c) -> 'a t -> 'b t -> 'c t

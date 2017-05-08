@@ -1,3 +1,5 @@
+(** Various function combinators *)
+
 val curry : ('a * 'b -> 'c) -> 'a -> 'b -> 'c
 val uncurry : ('a -> 'b -> 'c) -> 'a * 'b -> 'c
 external id : 'a -> 'a = "%identity"

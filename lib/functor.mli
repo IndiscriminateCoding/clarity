@@ -1,3 +1,5 @@
+(** Functors *)
+
 module type Basic = sig
   type _ t
   val map : ('a -> 'b) -> 'a t -> 'b t
