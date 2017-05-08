@@ -11,12 +11,12 @@ The goal of this project is to make pure functional programming idioms as useful
 
 ### Design notes
 
-* All concrete datatypes also have it's constructors defined as values where name is prefixed with underscore. Sometimes it's more convenient to use "curried", first-class version of constructor, e.g. following two are equivalent:
+* All concrete datatypes also have it's constructors defined as values where name is prefixed with underscore. Sometimes it's more convenient to use "curried", first-class version of a constructor, e.g. following two are equivalent:
 ```ocaml
 let long  = List.map (fun x -> Some x) a
 let short = List.map _Some x
 ```
-* Applicative operator (<\*>) are "lazy" by it's second argument. This allows functor to "fail-fast" and don't compute unneeded values. "Laziness" here is just (unit -> 'a) closure, so you can use function combinators from Fn module for convenience:
+* Applicative operator (<\*>) are "lazy" by it's second argument. This allows for an applicative to "fail-fast" and don't compute unneeded values. "Laziness" here is just (unit -> 'a) closure, so you can use function combinators from Fn module for convenience:
 ```ocaml
 open Clarity
 
