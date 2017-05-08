@@ -5,5 +5,4 @@ let const a _ = a
 let compose f g x = f (g x)
 let flip f a b = f b a
 let defer f x = fun _ -> f x
-let (@!) = defer
 

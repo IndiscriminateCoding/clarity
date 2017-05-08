@@ -7,5 +7,4 @@ val const : 'a -> 'b -> 'a
 val compose : ('a -> 'b) -> ('c -> 'a) -> 'c -> 'b
 val flip : ('a -> 'b -> 'c) -> 'b -> 'a -> 'c
 val defer : ('a -> 'b) -> 'a -> 'c -> 'b
-val ( @! ) : ('a -> 'b) -> 'a -> 'c -> 'b
 
