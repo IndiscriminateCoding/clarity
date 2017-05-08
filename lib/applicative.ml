@@ -79,7 +79,7 @@ module Make3(A : Basic3) = struct
       else r (cnt - 1) (discard_left x (const xl))
     in
     r cnt (pure ())
-  let rec forever x = discard_left x (forever @! x)
+  let rec forever x = discard_left x (defer forever x)
 end
 
 module Make2(A : Basic2) = struct
