@@ -1,4 +1,4 @@
-(** Values of two non-exclusive varians *)
+(** Values of two non-exclusive variants *)
 type ('l, 'r) t =
   Left of 'l | Right of 'r | Both of 'l * 'r
 
