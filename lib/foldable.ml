@@ -12,10 +12,6 @@ module type M = sig
   type _ t
   type _ m
 
-  include Traversable.S with
-    type 'a t := 'a t and
-    type 'a f := 'a m
-
   val foldr_m :
     ('a -> 'b -> 'b m) -> 'b -> 'a t -> 'b m
   val foldl_m :
@@ -26,10 +22,6 @@ module type M2 = sig
   type _ t
   type (_, _) m
 
-  include Traversable.S2 with
-    type 'a t := 'a t and
-    type ('u, 'a) f := ('u, 'a) m
-
   val foldr_m :
     ('a -> 'b -> ('u, 'b) m) -> 'b -> 'a t -> ('u, 'b) m
   val foldl_m :
@@ -39,10 +31,6 @@ end
 module type M3 = sig
   type _ t
   type (_, _, _) m
-
-  include Traversable.S3 with
-    type 'a t := 'a t and
-    type ('u, 'v, 'a) f := ('u, 'v, 'a) m
 
   val foldr_m :
     ('a -> 'b -> ('u, 'v, 'b) m) -> 'b -> 'a t -> ('u, 'v, 'b) m
