@@ -2,6 +2,7 @@ Align
 Applicative
 Either
 Fn
+Foldable
 Functor
 Id
 Monad
@@ -11,6 +12,7 @@ Reader
 Semigroup
 State
 These
+Traversable
 Void
 Writer
 
