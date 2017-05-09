@@ -44,17 +44,16 @@ include Align.Make(struct
     rev (loop [] (a, b))
 end)
 
-let rec foldl f a = function
-  | [] -> a
-  | h :: t -> foldl f (f a h) t
-let rec foldr f a = function
-  | [] -> a
-  | h :: t -> f h (defer (foldr f a) t)
-let fold_map ((append, zero) : _ Monoid.t) f =
-  foldl (compose append f) zero
+include Foldable.Make(struct
+  type nonrec 'a t = 'a t
 
-let any f = foldr (fun x a -> f x || a ())
-let all f = foldr (fun x a -> f x && a ())
+  let rec foldl f a = function
+    | [] -> a
+    | h :: t -> foldl f (f a h) t
+  let rec foldr f a = function
+    | [] -> a
+    | h :: t -> f h (defer (foldr f a) t)
+end)
 
 module WithA3 (A : Applicative.Basic3) = struct
   module Ap = Applicative.Make3(A)
