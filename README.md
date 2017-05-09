@@ -45,5 +45,5 @@ You can find ocamldoc [here](https://indiscriminatecoding.github.io/clarity-docs
 
 ### Installation
 
-    $ make install
+    $ make && make install
 
