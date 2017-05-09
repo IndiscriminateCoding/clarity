@@ -50,17 +50,13 @@ module Make3(M : Basic3) = struct
   let mcompose f g x = g x >>= f
 end
 
-module Make2(M : Basic2) = struct
-  include(Make3(struct
-    type (_, 'p, 'a) t = ('p, 'a) M.t
-    include (M : Basic2 with type ('p, 'a) t := ('p, 'a) M.t)
-  end))
-end
+module Make2(M : Basic2) = Make3(struct
+  type (_, 'p, 'a) t = ('p, 'a) M.t
+  include (M : Basic2 with type ('p, 'a) t := ('p, 'a) M.t)
+end)
 
-module Make(M : Basic) = struct
-  include(Make2(struct
-    type (_, 'a) t = 'a M.t
-    include (M : Basic with type 'a t := 'a M.t)
-  end))
-end
+module Make(M : Basic) = Make2(struct
+  type (_, 'a) t = 'a M.t
+  include (M : Basic with type 'a t := 'a M.t)
+end)
 

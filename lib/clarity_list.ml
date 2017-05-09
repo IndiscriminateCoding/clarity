@@ -70,19 +70,15 @@ module WithA3 (A : Applicative.Basic3) = Traversable.Make3(struct
     foldr (compose Ap.discard_left f) (Ap.pure ())
 end)
 
-module WithA2(A : Applicative.Basic2) = struct
-  include(WithA3(struct
-    type (_, 'p, 'a) t = ('p, 'a) A.t
-    include (A : Applicative.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
-  end))
-end
+module WithA2(A : Applicative.Basic2) = WithA3(struct
+  type (_, 'p, 'a) t = ('p, 'a) A.t
+  include (A : Applicative.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
+end)
 
-module WithA(A : Applicative.Basic) = struct
-  include(WithA2(struct
-    type (_, 'a) t = 'a A.t
-    include (A : Applicative.Basic with type 'a t := 'a A.t)
-  end))
-end
+module WithA(A : Applicative.Basic) = WithA2(struct
+  type (_, 'a) t = 'a A.t
+  include (A : Applicative.Basic with type 'a t := 'a A.t)
+end)
 
 module WithM3 (M : Monad.Basic3) = struct
   include WithA3(M)
@@ -96,17 +92,13 @@ module WithM3 (M : Monad.Basic3) = struct
     foldr g M.pure l a
 end
 
-module WithM2(A : Monad.Basic2) = struct
-  include(WithM3(struct
-    type (_, 'p, 'a) t = ('p, 'a) A.t
-    include (A : Monad.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
-  end))
-end
+module WithM2(A : Monad.Basic2) = WithM3(struct
+  type (_, 'p, 'a) t = ('p, 'a) A.t
+  include (A : Monad.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
+end)
 
-module WithM(A : Monad.Basic) = struct
-  include(WithM2(struct
-    type (_, 'a) t = 'a A.t
-    include (A : Monad.Basic with type 'a t := 'a A.t)
-  end))
-end
+module WithM(A : Monad.Basic) = WithM2(struct
+  type (_, 'a) t = 'a A.t
+  include (A : Monad.Basic with type 'a t := 'a A.t)
+end)
 

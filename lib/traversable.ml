@@ -53,23 +53,19 @@ module Make3(T : Basic3) = struct
   let foreach_ x = flip traverse_ x
 end
 
-module Make2(T : Basic2) = struct
-  include(Make3(struct
-    type 'a t = 'a T.t
-    type (_, 'p, 'a) f = ('p, 'a) T.f
-    include (T : Basic2 with
-      type ('p, 'a) f := ('p, 'a) T.f and
-      type 'a t := 'a T.t)
-  end))
-end
+module Make2(T : Basic2) = Make3(struct
+  type 'a t = 'a T.t
+  type (_, 'p, 'a) f = ('p, 'a) T.f
+  include (T : Basic2 with
+    type ('p, 'a) f := ('p, 'a) T.f and
+    type 'a t := 'a T.t)
+end)
 
-module Make(T : Basic) = struct
-  include(Make2(struct
-    type 'a t = 'a T.t
-    type (_, 'a) f = 'a T.f
-    include (T : Basic with
-      type 'a f := 'a T.f and
-      type 'a t := 'a T.t)
-  end))
-end
+module Make(T : Basic) = Make2(struct
+  type 'a t = 'a T.t
+  type (_, 'a) f = 'a T.f
+  include (T : Basic with
+    type 'a f := 'a T.f and
+    type 'a t := 'a T.t)
+end)
 

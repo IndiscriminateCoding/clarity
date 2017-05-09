@@ -61,17 +61,13 @@ module Make3(A : Basic3) = struct
   let pad_zip x = pad_zip_with (curry id) x
 end
 
-module Make2(A : Basic2) = struct
-  include(Make3(struct
-    type (_, 'p, 'a) t = ('p, 'a) A.t
-    include (A : Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
-  end))
-end
+module Make2(A : Basic2) = Make3(struct
+  type (_, 'p, 'a) t = ('p, 'a) A.t
+  include (A : Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
+end)
 
-module Make(A : Basic) = struct
-  include(Make2(struct
-    type (_, 'a) t = 'a A.t
-    include (A : Basic with type 'a t := 'a A.t)
-  end))
-end
+module Make(A : Basic) = Make2(struct
+  type (_, 'a) t = 'a A.t
+  include (A : Basic with type 'a t := 'a A.t)
+end)
 

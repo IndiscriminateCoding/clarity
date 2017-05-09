@@ -43,17 +43,13 @@ module Make3(F : Basic3) = struct
   let void x = replace () x
 end
 
-module Make2(F : Basic2) = struct
-  include(Make3(struct
-    type (_, 'p, 'a) t = ('p, 'a) F.t
-    include (F : Basic2 with type ('p, 'a) t := ('p, 'a) F.t)
-  end))
-end
+module Make2(F : Basic2) = Make3(struct
+  type (_, 'p, 'a) t = ('p, 'a) F.t
+  include (F : Basic2 with type ('p, 'a) t := ('p, 'a) F.t)
+end)
 
-module Make(F : Basic) = struct
-  include(Make2(struct
-    type (_, 'a) t = 'a F.t
-    include (F : Basic with type 'a t := 'a F.t)
-  end))
-end
+module Make(F : Basic) = Make2(struct
+  type (_, 'a) t = 'a F.t
+  include (F : Basic with type 'a t := 'a F.t)
+end)
 
