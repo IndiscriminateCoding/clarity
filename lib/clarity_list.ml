@@ -55,7 +55,10 @@ include Foldable.Make(struct
     | h :: t -> f h (defer (foldr f a) t)
 end)
 
-module WithA3 (A : Applicative.Basic3) = struct
+module WithA3 (A : Applicative.Basic3) = Traversable.Make3(struct
+  type nonrec 'a t = 'a t
+  type ('u, 'v, 'a) f = ('u, 'v, 'a) A.t
+
   module Ap = Applicative.Make3(A)
 
   let traverse f =
@@ -63,14 +66,9 @@ module WithA3 (A : Applicative.Basic3) = struct
       let open! Ap in
       ap (map _Cons (f x)) l in
     foldr cf (Ap.pure [])
-  let sequence x = traverse id x
-  let foreach x = flip traverse x
-
   let traverse_ f =
     foldr (compose Ap.discard_left f) (Ap.pure ())
-  let sequence_ x = traverse_ id x
-  let foreach_ x = flip traverse_ x
-end
+end)
 
 module WithA2(A : Applicative.Basic2) = struct
   include(WithA3(struct
