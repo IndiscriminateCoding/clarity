@@ -1,5 +1,6 @@
 (** Writer monad *)
-module Make : functor (M : Monoid.S) -> sig
+
+module Make (M : Monoid.S) : sig
   include Monad.S
 
   external run : 'a t -> M.t * 'a = "%identity"
