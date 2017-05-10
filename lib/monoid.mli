@@ -28,5 +28,5 @@ val pair : 'a t -> 'b t -> ('a * 'b) t
 val all : bool t
 val any : bool t
 val list : 'a list t
-val wrap_option : 'a Semigroup.t -> 'a option t
+val option : 'a Semigroup.t -> 'a option t
 

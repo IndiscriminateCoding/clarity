@@ -37,7 +37,7 @@ let pair : 'a t -> 'b t -> ('a * 'b) t =
 let all : bool t = (&&), true
 let any : bool t = (||), false
 let list : 'a list t = (@), []
-let wrap_option : 'a Semigroup.t -> 'a option t =
+let option : 'a Semigroup.t -> 'a option t =
   fun append ->
     curry
       (function
