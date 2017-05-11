@@ -11,6 +11,8 @@ val mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
 val rev : 'a t -> 'a t
 val rev_map : ('a -> 'b) -> 'a t -> 'b t
 val rev_mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
+val filter : ('a -> bool) -> 'a t -> 'a t
+val find : ('a -> bool) -> 'a t -> 'a Option.t
 
 (**
   Stable sort with supplied comparision function, default is

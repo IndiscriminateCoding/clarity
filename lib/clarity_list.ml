@@ -14,6 +14,11 @@ let rev_mapi f l =
   let i = ref (-1) in
   rev_map (fun x -> incr i; f !i x) l
 let mapi f = compose (rev_mapi f) rev
+let filter = List.filter
+let rec find p = function
+  | h :: _ when p h -> Some h
+  | _ :: t -> find p t
+  | [] -> None
 
 include Monad.Make(struct
   type nonrec 'a t = 'a t
