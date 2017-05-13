@@ -1,5 +1,3 @@
-open Fn
-
 module Make(M : Monoid.S) = struct
   type 'a t = M.t * 'a
 

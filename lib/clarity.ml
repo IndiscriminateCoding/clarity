@@ -20,6 +20,7 @@ module Semigroup = Semigroup
 module State = State
 module These = These
 module Traversable = Traversable
+module Validation = Validation
 module Void = Void
 module Writer = Writer
 
