@@ -12,7 +12,7 @@ module Make (S : Semigroup.S) : sig
   val maybe_result : 'a t -> 'a option
 
   external to_either : 'a t -> (S.t, 'a) Either.t = "%identity"
-  external from_either : (S.t, 'a) Either.t -> 'a t = "%identity"
+  external of_either : (S.t, 'a) Either.t -> 'a t = "%identity"
 
   val zip : 'a t -> 'b t -> ('a * 'b) t
 end

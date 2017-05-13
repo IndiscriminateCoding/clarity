@@ -23,7 +23,7 @@ module Make(S : Semigroup.S) = struct
   let maybe_errors = maybe_left
   let maybe_result = maybe_right
   external to_either : 'a t -> (S.t, 'a) Either.t = "%identity"
-  external from_either : (S.t, 'a) Either.t -> 'a t = "%identity"
+  external of_either : (S.t, 'a) Either.t -> 'a t = "%identity"
   let zip a b = map (curry id) a <*> const b
 end
 
