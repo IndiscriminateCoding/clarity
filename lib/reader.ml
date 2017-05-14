@@ -24,6 +24,6 @@ let dimap : ('q -> 'r) -> ('a -> 'b) -> ('r, 'a) t -> ('q, 'b) t =
   fun rf vf x q ->
     vf (x (rf q))
 
-let zip : ('r, 'a) t -> ('r, 'b) t -> ('r, 'a * 'b) t =
-  fun a b r -> a r, b r
+let zip_with f a b r = f (a r) (b r)
+let zip a b = zip_with (fun a b -> a, b) a b
 

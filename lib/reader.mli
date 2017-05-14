@@ -8,4 +8,5 @@ val ask : ('r, 'r) t
 val local : ('r -> 'r) -> ('r, 'a) t -> ('r, 'a) t
 val dimap : ('q -> 'r) -> ('a -> 'b) -> ('r, 'a) t -> ('q, 'b) t
 val zip : ('r, 'a) t -> ('r, 'b) t -> ('r, 'a * 'b) t
+val zip_with : ('a -> 'b -> 'c) -> ('r, 'a) t -> ('r, 'b) t -> ('r, 'c) t
 

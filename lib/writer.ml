@@ -25,7 +25,7 @@ module Make(M : Monoid.S) = struct
   let censor : (M.t -> M.t) -> 'a t -> 'a t =
     fun f (w, x) -> (f w, x)
 
-  let zip : 'a t -> 'b t -> ('a * 'b) t =
-    fun (w1, x1) (w2, x2) -> (M.append w1 w2, (x1, x2))
+  let zip_with f (w1, x1) (w2, x2) = (M.append w1 w2, f x1 x2)
+  let zip a b = zip_with (fun a b -> a, b) a b
 end
 
