@@ -13,7 +13,5 @@ module Make (S : Semigroup.S) : sig
 
   external to_either : 'a t -> (S.t, 'a) Either.t = "%identity"
   external of_either : (S.t, 'a) Either.t -> 'a t = "%identity"
-
-  val zip : 'a t -> 'b t -> ('a * 'b) t
 end
 

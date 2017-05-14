@@ -1,5 +1,3 @@
-open Fn
-
 module Make(S : Semigroup.S) = struct
   open Either
 
@@ -17,13 +15,12 @@ module Make(S : Semigroup.S) = struct
       | Left _ as l, _ | _, (Left _ as l) -> l
   end)
 
-  let map_errors f = bimap f id
+  let map_errors f = bimap f Fn.id
   let fail = _Left
   let fold = fold
   let maybe_errors = maybe_left
   let maybe_result = maybe_right
   external to_either : 'a t -> (S.t, 'a) Either.t = "%identity"
   external of_either : (S.t, 'a) Either.t -> 'a t = "%identity"
-  let zip a b = map (curry id) a <*> const b
 end
 
