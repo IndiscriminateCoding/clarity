@@ -9,7 +9,4 @@ module Make (M : Monoid.S) : sig
   val tell : M.t -> unit t
   val listen : 'a t -> ('a * M.t) t
   val censor : (M.t -> M.t) -> 'a t -> 'a t
-  val zip : 'a t -> 'b t -> ('a * 'b) t
-  val zip_with : ('a -> 'b -> 'c) -> 'a t -> 'b t -> 'c t
 end
-
