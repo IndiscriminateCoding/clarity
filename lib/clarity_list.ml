@@ -23,11 +23,11 @@ let rec find p = function
 
 let intersperse x =
   let rec prepend acc = function
-  | [] -> rev acc
-  | h :: t -> prepend (h :: x :: acc) t in
+  | [] -> acc
+  | h :: t -> prepend (x :: h :: acc) t in
   function
   | [] -> []
-  | h :: t -> h :: prepend [] t
+  | h :: t -> h :: prepend [] (rev t)
 
 include Monad.Make(struct
   type nonrec 'a t = 'a t
