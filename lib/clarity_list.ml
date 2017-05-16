@@ -5,20 +5,29 @@ type 'a t = 'a list
 let _Cons h t = h :: t
 let _Nil = []
 
-let length = List.length
 let rev = List.rev
+let rev_append = List.rev_append
 let rev_map = List.rev_map
-let sort ?(cmp = compare) = List.stable_sort cmp
-let append l = List.rev_append (rev l)
 let rev_mapi f l =
   let i = ref (-1) in
   rev_map (fun x -> incr i; f !i x) l
+let length = List.length
+let sort ?(cmp = compare) = List.stable_sort cmp
+let append l = rev_append (rev l)
 let mapi f = compose (rev_mapi f) rev
 let filter = List.filter
 let rec find p = function
   | h :: _ when p h -> Some h
   | _ :: t -> find p t
   | [] -> None
+
+let intersperse x =
+  let rec prepend acc = function
+  | [] -> rev acc
+  | h :: t -> prepend (h :: x :: acc) t in
+  function
+  | [] -> []
+  | h :: t -> h :: prepend [] t
 
 include Monad.Make(struct
   type nonrec 'a t = 'a t
