@@ -13,8 +13,8 @@ module type S = sig
   val fold_map : 'a Monoid.t -> ('a -> 'a) -> 'a t -> 'a
   val suml : 'a Monoid.t -> 'a t -> 'a
   val sumr : 'a Monoid.t -> 'a t -> 'a
-  val any : ('a -> bool) -> bool -> 'a t -> bool
-  val all : ('a -> bool) -> bool -> 'a t -> bool
+  val any : ('a -> bool) -> 'a t -> bool
+  val all : ('a -> bool) -> 'a t -> bool
 end
 
 module Make (F : Basic) : S with type 'a t := 'a F.t

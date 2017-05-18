@@ -11,8 +11,8 @@ module type S = sig
   val fold_map : 'a Monoid.t -> ('a -> 'a) -> 'a t -> 'a
   val suml : 'a Monoid.t -> 'a t -> 'a
   val sumr : 'a Monoid.t -> 'a t -> 'a
-  val any : ('a -> bool) -> bool -> 'a t -> bool
-  val all : ('a -> bool) -> bool -> 'a t -> bool
+  val any : ('a -> bool) -> 'a t -> bool
+  val all : ('a -> bool) -> 'a t -> bool
 end
 
 module Make(F : Basic) = struct
@@ -23,8 +23,8 @@ module Make(F : Basic) = struct
     foldl (compose append f) zero
   let suml m = fold_map m id
   let sumr m = suml (Monoid.swap m)
-  let any p = foldr (fun x a -> p x || a ())
-  let all p = foldr (fun x a -> p x && a ())
+  let any p = foldr (fun x a -> p x || a ()) false
+  let all p = foldr (fun x a -> p x && a ()) true
 end
 
 module type M = sig

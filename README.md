@@ -33,9 +33,9 @@ let res : string Option.t =
     <*> defer long_computation 1024
     <*> const title
 ```
-* Right folds are also "lazy" by "accumulator" argument of a folding function. This allows for shortcut when function no more needs data. For example, here is 'any' function from List module that checks if at least one element of a list satisfies given predicate:
+* Right folds are also "lazy" by "accumulator" argument of a folding function. This allows for shortcut when function no more needs data. For example, here is 'any' function from Foldable module that checks if at least one element of a list satisfies given predicate:
 ```ocaml
-let any f = foldr (fun x a -> f x || a ())
+let any p = foldr (fun x a -> p x || a ()) false
 ```
 * Monoids and Semigroups are defined in two versions - as module type and as value type. Module-based representation allows passing instances to functors (like Writer.Make, for example) while value-based allows to supply instances to functions like 'fold_map'. You can easily convert one representation to another using 'pack' and 'unpack' helpers.
 
