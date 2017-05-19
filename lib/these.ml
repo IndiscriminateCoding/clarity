@@ -19,7 +19,7 @@ module Make(S : Semigroup.S) = struct
 
     let pure x = Right x
     let bind f = function
-    | Left l -> Left l
+    | Left _ as l -> l
     | Right r -> f r
     | Both (l, x) ->
       begin match f x with
@@ -30,10 +30,10 @@ module Make(S : Semigroup.S) = struct
 
     let ap f x =
       match f with
-      | Left l -> Left l
+      | Left _ as l -> l
       | Right f ->
         begin match x () with
-        | Left b -> Left b
+        | Left _ as b -> b
         | Right x -> Right (f x)
         | Both (l, x) -> Both (l, f x)
         end
@@ -45,7 +45,7 @@ module Make(S : Semigroup.S) = struct
         end
 
     let map f = function
-    | Left l -> Left l
+    | Left _ as l -> l
     | Right r -> Right (f r)
     | Both (l, r) -> Both (l, f r)
   end)

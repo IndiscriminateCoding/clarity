@@ -17,11 +17,11 @@ include Monad.Make2(struct
 
   let pure x = Right x
   let ap = function
-    | Left l -> const (Left l)
+    | Left _ as l -> const l
     | Right f -> fun x -> map f (x ())
 
   let bind f = function
-  | Left l -> Left l
+  | Left _ as l -> l
   | Right r -> f r
 end)
 

@@ -42,7 +42,7 @@ let option : 'a Semigroup.t -> 'a option t =
     curry
       (function
       | Some a, Some b -> Some (append a b)
-      | _, Some x | Some x, _ -> Some x
+      | _, (Some _ as x) | (Some _ as x), _ -> x
       | _ -> None)
     , None
 
