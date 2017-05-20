@@ -33,7 +33,7 @@ let res : string Option.t =
     <*> defer long_computation 1024
     <*> const title
 ```
-* Right folds are also "lazy" by "accumulator" argument of a folding function. This allows for shortcut when function no more needs data. For example, here is 'any' function from Foldable module that checks if at least one element of a list satisfies given predicate:
+* Right folds are also "lazy" by "accumulator" argument of a folding function. This allows for shortcut when function no more needs data. For example, here is 'any' function from Foldable module that checks if at least one element of a Foldable satisfies given predicate:
 ```ocaml
 let any p = foldr (fun x a -> p x || a ()) false
 ```
