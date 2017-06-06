@@ -4,7 +4,7 @@ module type Basic = sig
   type _ t
 
   val foldl : ('a -> 'b -> 'a) -> 'a -> 'b t -> 'a
-  val foldr : ('a -> (unit -> 'b) -> 'b) -> 'b -> 'a t -> 'b
+  val foldr : ('a -> (unit -> 'b) -> 'b) -> (unit -> 'b) -> 'a t -> 'b
 end
 
 module type S = sig

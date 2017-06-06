@@ -65,7 +65,7 @@ include Foldable.Make(struct
     | [] -> a
     | h :: t -> foldl f (f a h) t
   let rec foldr f a = function
-    | [] -> a
+    | [] -> a ()
     | h :: t -> f h (defer (foldr f a) t)
 end)
 
@@ -79,9 +79,9 @@ module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
     let cf x l =
       let open! Ap in
       ap (map _Cons (f x)) l in
-    foldr cf (Ap.pure [])
+    foldr cf (defer Ap.pure [])
   let traverse_ f =
-    foldr (compose Ap.discard_left f) (Ap.pure ())
+    foldr (compose Ap.discard_left f) (defer Ap.pure ())
 end)
 
 module WithA2(A : Applicative.Basic2) = WithA3(struct
@@ -103,7 +103,7 @@ module WithM3(M : Monad.Basic3) = struct
 
   let foldl_m f a l =
     let g x k z = M.bind (fun x -> k () x) (f z x) in
-    foldr g M.pure l a
+    foldr g (const M.pure) l a
 end
 
 module WithM2(M : Monad.Basic2) = WithM3(struct
