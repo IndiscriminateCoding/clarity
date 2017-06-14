@@ -306,12 +306,12 @@ module Concatenation = struct
 
   let leftmost = function
     | R_node (_, x) | B_node x ->
-    A.get x 0
+      A.get x 0
     | Leaf _ -> assert false
 
   let rightmost = function
     | R_node (_, x) | B_node x ->
-    A.get x (A.len x - 1)
+      A.get x (A.len x - 1)
     | Leaf _ -> assert false
 
   (* append vectors of the same depth and return vector that is one-level
