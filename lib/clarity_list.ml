@@ -40,9 +40,12 @@ include Monad.Make(struct
       | h :: t -> loop (compose a (append (f h))) t
   in loop id x []
   let ap f x =
-    flip bind f @@ fun f ->
-    flip bind (x ()) @@ fun x ->
-    pure (f x)
+    if f = []
+    then []
+    else let x = x () in
+      flip bind f @@ fun f ->
+      flip bind x @@ fun x ->
+      pure (f x)
 end)
 
 include Align.Make(struct

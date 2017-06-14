@@ -24,8 +24,8 @@ val rev_mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
 val sort : ?cmp:('a -> 'a -> int) -> 'a t -> 'a t
 
 include Monad.S with type 'a t := 'a t
-include Align.S with type 'a t := 'a t
 include Foldable.S with type 'a t := 'a t
+include Align.S with type 'a t := 'a t
 
 module WithA (A : Applicative.Basic) : Traversable.S with
   type 'a t := 'a t and
