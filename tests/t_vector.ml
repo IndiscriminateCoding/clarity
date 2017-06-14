@@ -234,7 +234,6 @@ module Align = struct
 
   let c = align a b
 
-  let idx = ref 0
   ;; assert (to_list a = lefts c)
   ;; assert (to_list b = rights c)
 
