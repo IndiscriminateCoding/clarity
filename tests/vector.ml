@@ -132,6 +132,14 @@ module Get = struct
   let idx = ref 0
   ;; iter (fun x -> assert (x = get src !idx); incr idx) src
 
+  ;;
+  try
+    ignore @@ get src (length src);
+    assert false
+  with
+  | Out_of_bounds _ -> ()
+  | _ -> assert false
+
   ;; printf "Vector.Get OK\n"
 end
 
