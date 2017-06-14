@@ -1,0 +1,8 @@
+(jbuild_version 1)
+(executable
+  ((name T_main)
+   (libraries (clarity))
+   (flags (-w +44+45 -strict-sequence -principal))))
+(alias
+  ((name runtest)
+    (action (run ${exe:T_main.exe}))))

@@ -21,6 +21,7 @@ module State = State
 module These = These
 module Traversable = Traversable
 module Validation = Validation
+module Vector = Vector
 module Void = Void
 module Writer = Writer
 
