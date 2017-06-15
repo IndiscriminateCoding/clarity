@@ -5,6 +5,7 @@ type 'a t = 'a list
 let _Cons h t = h :: t
 let _Nil = []
 
+let iter = List.iter
 let rev = List.rev
 let rev_append = List.rev_append
 let rev_map = List.rev_map

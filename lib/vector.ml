@@ -592,6 +592,12 @@ include Foldable.Make(struct
   | R_node (_, x) | B_node x -> A.foldr (fun x a -> foldr f a x) a x
 end)
 
+let to_list x = foldl (flip Clarity_list._Cons) [] x
+let of_list x =
+  let push, build = make_pb () in
+  Clarity_list.iter push x;
+  build ()
+
 include Align.Make(struct
   type nonrec 'a t = 'a t
 
@@ -611,5 +617,54 @@ include Align.Make(struct
         push @@ f @@ Right (get b i)
     done;
     build ()
+end)
+
+module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
+  type nonrec 'a t = 'a t
+  type ('u, 'v, 'a) f = ('u, 'v, 'a) A.t
+
+  module Ap = Applicative.Make3(A)
+
+  let traverse f x =
+    let cf x l =
+      let open! Ap in
+      ap (map (fun h t -> h :: t) (f x)) l in
+    let ls = foldr cf (defer Ap.pure []) x in
+    Ap.map of_list ls
+
+  let traverse_ f =
+    foldr (compose Ap.discard_left f) (defer Ap.pure ())
+end)
+
+module WithA2(A : Applicative.Basic2) = WithA3(struct
+  type (_, 'p, 'a) t = ('p, 'a) A.t
+  include (A : Applicative.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
+end)
+
+module WithA(A : Applicative.Basic) = WithA2(struct
+  type (_, 'a) t = 'a A.t
+  include (A : Applicative.Basic with type 'a t := 'a A.t)
+end)
+
+module WithM3(M : Monad.Basic3) = struct
+  include WithA3(M)
+
+  let foldr_m f a l =
+    let g k x z = M.bind k (f x z) in
+    foldl g M.pure l a
+
+  let foldl_m f a l =
+    let g x k z = M.bind (fun x -> k () x) (f z x) in
+    foldr g (const M.pure) l a
+end
+
+module WithM2(M : Monad.Basic2) = WithM3(struct
+  type (_, 'p, 'a) t = ('p, 'a) M.t
+  include (M : Monad.Basic2 with type ('p, 'a) t := ('p, 'a) M.t)
+end)
+
+module WithM(M : Monad.Basic) = WithM2(struct
+  type (_, 'a) t = 'a M.t
+  include (M : Monad.Basic with type 'a t := 'a M.t)
 end)
 

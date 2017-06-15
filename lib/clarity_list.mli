@@ -5,6 +5,7 @@ type 'a t = 'a list
 val _Cons : 'a -> 'a list -> 'a list
 val _Nil : 'a list
 
+val iter : ('a -> unit) -> 'a t -> unit
 val append : 'a t -> 'a t -> 'a t
 val length : 'a t -> int
 val mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
