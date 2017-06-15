@@ -7,7 +7,7 @@ The goal of this project is to make pure functional programming idioms as useful
 
 * Standard "classes" like Functor-Applicative-Monad
 * Concrete instances like Reader-Writer-State
-* Useful data types like Either or These
+* Useful data types like Either, These or Vector
 
 ### Design notes
 
@@ -45,5 +45,5 @@ You can find ocamldoc [here](https://indiscriminatecoding.github.io/clarity-docs
 
 ### Installation
 
-    $ make && make install
+    $ make && jbuilder install
 
