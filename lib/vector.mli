@@ -29,10 +29,8 @@ val empty : 'a t
 (** The length of a vector. *)
 val length : 'a t -> int
 
-(**
-  [init l f] creates vector of length [l] where value at position [i] is
-  initialized with [f i].
-*)
+(** [init l f] creates vector of length [l] where value at position [i] is
+  initialized with [f i]. *)
 val init : int -> (int -> 'a) -> 'a t
 
 (** Concatenates two vectors. "Effectively constant". *)
