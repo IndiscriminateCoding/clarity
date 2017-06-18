@@ -10,7 +10,6 @@ val append : 'a t -> 'a t -> 'a t
 val length : 'a t -> int
 val mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
 val filter : ('a -> bool) -> 'a t -> 'a t
-val find : ('a -> bool) -> 'a t -> 'a Option.t
 val intersperse : 'a -> 'a list -> 'a list
 
 val rev : 'a t -> 'a t

@@ -15,6 +15,7 @@ module type S = sig
   val sumr : 'a Monoid.t -> 'a t -> 'a
   val any : ('a -> bool) -> 'a t -> bool
   val all : ('a -> bool) -> 'a t -> bool
+  val find : ('a -> bool) -> 'a t -> 'a option
 end
 
 module Make (F : Basic) : S with type 'a t := 'a F.t

@@ -17,10 +17,6 @@ let sort ?(cmp = compare) = List.stable_sort cmp
 let append l = rev_append (rev l)
 let mapi f = compose (rev_mapi f) rev
 let filter = List.filter
-let rec find p = function
-  | h :: _ when p h -> Some h
-  | _ :: t -> find p t
-  | [] -> None
 
 let intersperse x =
   let rec prepend acc = function
