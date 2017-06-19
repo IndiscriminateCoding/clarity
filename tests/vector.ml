@@ -35,11 +35,6 @@ let rec check_indices = function
     done
 
 module Concat = struct
-  let to_list i v =
-    let res = ref i in
-    iter (fun x -> res := x :: !res) v;
-    !res
-
   let mk =
     let n = ref 0 in
     fun l ->
@@ -64,8 +59,8 @@ module Concat = struct
   ;; check_indices src_b
   ;; check_indices dst
 
-  let dst_lst = to_list [] dst
-  ;; assert (to_list (to_list [] src_a) src_b = dst_lst)
+  let dst_lst = to_list dst
+  ;; assert (to_list src_a @ to_list src_b = dst_lst)
   ;; assert (List.length dst_lst = length dst)
   ;; printf "Vector.Concat OK\n"
 end
@@ -217,16 +212,19 @@ module Split_at = struct
 end
 
 module Align = struct
-  let to_list v =
-    let res = ref [] in
-    iter (fun x -> res := x :: !res) v;
-    !res
-
   open These
-  let lefts = foldl
-    (fun a -> function Left l | Both (l, _) -> l :: a | _ -> a) []
-  let rights = foldl
-    (fun a -> function Right r | Both (_, r) -> r :: a | _ -> a) []
+  let lefts x =
+    foldl
+      (fun a -> function Left l | Both (l, _) -> l :: a | _ -> a)
+      []
+      x
+    |> List.rev
+  let rights x =
+    foldl
+      (fun a -> function Right r | Both (_, r) -> r :: a | _ -> a)
+      []
+      x
+    |> List.rev
 
   let mk =
     let n = ref (-1) in
