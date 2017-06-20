@@ -10,6 +10,7 @@ module A = struct
   let copy = Array.copy
   let iter = Array.iter
   let foldl = Array.fold_left
+  let foldr' f a x = Array.fold_right f x a
 
   let foldr : type a x . (x -> (unit -> a) -> a) -> (unit -> a) -> x t -> a =
     fun f a x ->
@@ -591,6 +592,10 @@ include Foldable.Make(struct
   | Leaf x -> A.foldr f a x
   | R_node (_, x) | B_node x -> A.foldr (fun x a -> foldr f a x) a x
 end)
+
+let rec foldr' f a = function
+  | Leaf x -> A.foldr' f a x
+  | R_node (_, x) | B_node x -> A.foldr' (fun x a -> foldr' f a x) a x
 
 let to_list x = foldr' (Clarity_list._Cons) [] x
 let of_list x =
