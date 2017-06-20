@@ -597,7 +597,7 @@ let rec foldr' f a = function
   | Leaf x -> A.foldr' f a x
   | R_node (_, x) | B_node x -> A.foldr' (fun x a -> foldr' f a x) a x
 
-let to_list x = foldr' (Clarity_list._Cons) [] x
+let to_list x = foldr' Clarity_list._Cons [] x
 let of_list x =
   let push, build = make_pb () in
   Clarity_list.iter push x;
