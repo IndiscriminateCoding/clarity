@@ -5,7 +5,6 @@ end
 
 module Align = Align
 module Applicative = Applicative
-module Clarity = Clarity
 module Either = Either
 module Fn = Fn
 module Foldable = Foldable
