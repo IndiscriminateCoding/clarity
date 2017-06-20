@@ -69,6 +69,8 @@ include Foldable.Make(struct
     | h :: t -> f h (defer (foldr f a) t)
 end)
 
+let foldr' f a x = foldl (flip f) a (rev x)
+
 module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
   type nonrec 'a t = 'a t
   type ('u, 'v, 'a) f = ('u, 'v, 'a) A.t

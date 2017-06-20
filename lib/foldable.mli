@@ -10,6 +10,7 @@ end
 module type S = sig
   include Basic
 
+  val foldr' : ('a -> 'b -> 'b) -> 'b -> 'a t -> 'b
   val fold_map : 'a Monoid.t -> ('a -> 'a) -> 'a t -> 'a
   val suml : 'a Monoid.t -> 'a t -> 'a
   val sumr : 'a Monoid.t -> 'a t -> 'a

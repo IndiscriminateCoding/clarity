@@ -8,6 +8,7 @@ end
 module type S = sig
   include Basic
 
+  val foldr' : ('a -> 'b -> 'b) -> 'b -> 'a t -> 'b
   val fold_map : 'a Monoid.t -> ('a -> 'a) -> 'a t -> 'a
   val suml : 'a Monoid.t -> 'a t -> 'a
   val sumr : 'a Monoid.t -> 'a t -> 'a
@@ -20,6 +21,7 @@ module Make(F : Basic) = struct
   open Fn
   include F
 
+  let foldr' f a = foldr (fun x a -> f x (a ())) (const a)
   let fold_map ((append, zero) : _ Monoid.t) f =
     foldl (compose append f) zero
   let suml m = fold_map m id

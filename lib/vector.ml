@@ -592,7 +592,7 @@ include Foldable.Make(struct
   | R_node (_, x) | B_node x -> A.foldr (fun x a -> foldr f a x) a x
 end)
 
-let to_list x = foldr (fun x a -> Clarity_list._Cons x (a ())) (const []) x
+let to_list x = foldr' (Clarity_list._Cons) [] x
 let of_list x =
   let push, build = make_pb () in
   Clarity_list.iter push x;
