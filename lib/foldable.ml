@@ -9,9 +9,8 @@ module type S = sig
   include Basic
 
   val foldr' : ('a -> 'b -> 'b) -> 'b -> 'a t -> 'b
-  val fold_map : 'a Monoid.t -> ('a -> 'a) -> 'a t -> 'a
-  val suml : 'a Monoid.t -> 'a t -> 'a
-  val sumr : 'a Monoid.t -> 'a t -> 'a
+  val fold_map :
+    (module Monoid.S with type t = 'm) -> ('a -> 'm) -> 'a t -> 'm
   val any : ('a -> bool) -> 'a t -> bool
   val all : ('a -> bool) -> 'a t -> bool
   val find : ('a -> bool) -> 'a t -> 'a option
@@ -22,10 +21,9 @@ module Make(F : Basic) = struct
   include F
 
   let foldr' f a = foldr (fun x a -> f x (a ())) (const a)
-  let fold_map ((append, zero) : _ Monoid.t) f =
-    foldl (compose append f) zero
-  let suml m = fold_map m id
-  let sumr m = suml (Monoid.swap m)
+  let fold_map (type m) m f =
+    let module M = (val m : Monoid.S with type t = m) in
+    foldl (fun a x -> M.append a (f x)) M.zero
   let any p = foldr (fun x a -> p x || a ()) (const false)
   let all p = foldr (fun x a -> p x && a ()) (const true)
   let find p = foldr (fun x a -> if p x then Some x else a ()) (const None)

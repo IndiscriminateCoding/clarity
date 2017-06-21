@@ -5,44 +5,66 @@ module type S = sig
   val zero : t
 end
 
-type 'a t = ('a -> 'a -> 'a) * 'a
+module Int = struct
+  module Min = struct
+    type t = int
+    let append = min
+    let zero = min_int
+  end
+  module Max = struct
+    type t = int
+    let append = max
+    let zero = max_int
+  end
+  module Sum = struct
+    type t = int
+    let append = (+)
+    let zero = 0
+  end
+  module Product = struct
+    type t = int
+    let append = ( * )
+    let zero = 1
+  end
+end
 
-let pack : type a . a t -> (module S with type t = a) =
-  fun (a, z) ->
-    (module struct
-      type t = a
-      let append = a
-      let zero = z
-    end)
-let unpack : type a . (module S with type t = a) -> a t =
-  fun m ->
-    let module M = (val m) in
-    M.append, M.zero
+module All = struct
+  type t = bool
+  let append = (&&)
+  let zero = true
+end
 
-let to_semigroup : 'a t -> 'a Semigroup.t = fst
+module Any = struct
+  type t = bool
+  let append = (||)
+  let zero = false
+end
 
-let int_min = (min, min_int)
-let int_max = (max, max_int)
-let int_sum = ((+), 1)
-let int_prod = (( * ), 0)
+module Dual (M : S) = struct
+  type t = M.t
+  let append = flip M.append
+  let zero = M.zero
+end
 
-let swap : 'a t -> 'a t =
-  fun (a, z) -> flip a, z
-let endo : ('a -> 'a) t =
-  compose, id
-let pair : 'a t -> 'b t -> ('a * 'b) t =
-  fun (a1, z1) (a2, z2) ->
-    (fun (a, b) (x, y) -> a1 a x, a2 b y), (z1, z2)
+module Endo (T : sig type t end) = struct
+  type t = T.t -> T.t
+  let append = compose
+  let zero = id
+end
 
-let all : bool t = (&&), true
-let any : bool t = (||), false
-let list : 'a list t = (@), []
-let option : 'a Semigroup.t -> 'a option t =
-  fun append ->
-    curry
-      (function
-      | Some a, Some b -> Some (append a b)
-      | _, (Some _ as x) | (Some _ as x), _ -> x
-      | _ -> None)
-    , None
+module Pair (M1 : S)(M2 : S) = struct
+  type t = M1.t * M2.t
+  let append (a, b) (x, y) = M1.append a x, M2.append b y
+  let zero = M1.zero, M2.zero
+end
+
+module Opt (S : Semigroup.S) = struct
+  type t = S.t option
+  let append = curry
+    (function
+    | Some a, Some b -> Some (S.append a b)
+    | _, (Some _ as x) | (Some _ as x), _ -> x
+    | _ -> None)
+  let zero = None
+end
 

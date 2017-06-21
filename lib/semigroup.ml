@@ -3,19 +3,13 @@ module type S = sig
   val append : t -> t -> t
 end
 
-type 'a t = 'a -> 'a -> 'a
+module First (T : sig type t end) = struct
+  type t = T.t
+  let append x _ = x
+end
 
-let pack : type a . a t -> (module S with type t = a) =
-  fun x ->
-    (module struct
-      type t = a
-      let append = x
-    end)
-let unpack : type a . (module S with type t = a) -> a t =
-  fun m ->
-    let module M = (val m) in
-    M.append
-
-let first x _ = x
-let last _ x = x
+module Last (T : sig type t end) = struct
+  type t = T.t
+  let append _ x = x
+end
 

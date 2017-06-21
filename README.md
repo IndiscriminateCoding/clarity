@@ -37,13 +37,12 @@ let res : string Option.t =
 ```ocaml
 let any p = foldr (fun x a -> p x || a ()) false
 ```
-* Monoids and Semigroups are defined in two versions - as module type and as value type. Module-based representation allows passing instances to functors (like Writer.Make, for example) while value-based allows to supply instances to functions like 'fold_map'. You can easily convert one representation to another using 'pack' and 'unpack' helpers.
 
 ### Documentation
 
 You can find ocamldoc [here](https://indiscriminatecoding.github.io/clarity-docs/).
 
-### Installation
+### Manual installation
 
-    $ make && jbuilder install
+    $ make && make install
 
