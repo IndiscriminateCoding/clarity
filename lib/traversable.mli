@@ -24,25 +24,19 @@ end
 module type S = sig
   include Basic
   val sequence : 'a f t -> 'a t f
-  val foreach : 'a t -> ('a -> 'b f) -> 'b t f
   val sequence_ : 'a f t -> unit f
-  val foreach_ : 'a t -> ('a -> 'b f) -> unit f
 end
 
 module type S2 = sig
   include Basic2
   val sequence : ('u, 'a) f t -> ('u, 'a t) f
-  val foreach : 'a t -> ('a -> ('u, 'b) f) -> ('u, 'b t) f
   val sequence_ : ('u, 'a) f t -> ('u, unit) f
-  val foreach_ : 'a t -> ('a -> ('u, 'b) f) -> ('u, unit) f
 end
 
 module type S3 = sig
   include Basic3
   val sequence : ('a, 'b, 'c) f t -> ('a, 'b, 'c t) f
-  val foreach : 'a t -> ('a -> ('b, 'c, 'd) f) -> ('b, 'c, 'd t) f
   val sequence_ : ('a, 'b, 'c) f t -> ('a, 'b, unit) f
-  val foreach_ : 'a t -> ('a -> ('b, 'c, 'd) f) -> ('b, 'c, unit) f
 end
 
 module Make (T : Basic) : S with
