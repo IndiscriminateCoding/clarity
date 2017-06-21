@@ -1,4 +1,4 @@
-module Make(M : Monoid.S) = struct
+module Make (M : Monoid.S) = struct
   type 'a t = M.t * 'a
 
   include Monad.Make(struct

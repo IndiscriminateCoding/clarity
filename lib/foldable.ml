@@ -16,7 +16,7 @@ module type S = sig
   val find : ('a -> bool) -> 'a t -> 'a option
 end
 
-module Make(F : Basic) = struct
+module Make (F : Basic) = struct
   open Fn
   include F
 

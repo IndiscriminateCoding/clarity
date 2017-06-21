@@ -1,4 +1,4 @@
-module Make(S : Semigroup.S) = struct
+module Make (S : Semigroup.S) = struct
   open Either
 
   type 'a t = (S.t, 'a) Either.t

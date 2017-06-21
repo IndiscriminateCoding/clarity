@@ -12,7 +12,7 @@ let bimap lf rf = function
   | Right r -> Right (rf r)
   | Both (l, r) -> Both (lf l, rf r)
 
-module Make(S : Semigroup.S) = struct
+module Make (S : Semigroup.S) = struct
   type nonrec 'a t = (S.t, 'a) t
   include Monad.Make(struct
     type nonrec 'a t = 'a t

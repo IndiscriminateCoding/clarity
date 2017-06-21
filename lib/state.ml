@@ -2,7 +2,7 @@ open Fn
 
 type ('s, 'a) t = 's -> ('s * 'a)
 
-include Monad.Make2(struct
+include Monad.Make2 (struct
   type nonrec ('s, 'a) t = ('s, 'a) t
 
   let map f x s =

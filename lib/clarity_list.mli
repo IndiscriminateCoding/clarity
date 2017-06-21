@@ -27,17 +27,17 @@ include Monad.S with type 'a t := 'a t
 include Foldable.S with type 'a t := 'a t
 include Align.S with type 'a t := 'a t
 
-module WithA (A : Applicative.Basic) : Traversable.S with
+module A : functor (A : Applicative.Basic) -> Traversable.S with
   type 'a t := 'a t and
   type 'a f := 'a A.t
-module WithA2 (A : Applicative.Basic2) : Traversable.S2 with
+module A2 : functor (A : Applicative.Basic2) -> Traversable.S2 with
   type 'a t := 'a t and
   type ('u, 'a) f := ('u, 'a) A.t
-module WithA3 (A : Applicative.Basic3) : Traversable.S3 with
+module A3 : functor (A : Applicative.Basic3) -> Traversable.S3 with
   type 'a t := 'a t and
   type ('u, 'v, 'a) f := ('u, 'v, 'a) A.t
 
-module WithM (M : Monad.Basic) : sig
+module M : functor (M : Monad.Basic) -> sig
   include Traversable.S with
     type 'a t := 'a t and
     type 'a f := 'a M.t
@@ -45,7 +45,7 @@ module WithM (M : Monad.Basic) : sig
     type 'a t := 'a t and
     type 'a m := 'a M.t
 end
-module WithM2 (M : Monad.Basic2) : sig
+module M2 : functor (M : Monad.Basic2) -> sig
   include Traversable.S2 with
     type 'a t := 'a t and
     type ('u, 'a) f := ('u, 'a) M.t
@@ -53,7 +53,7 @@ module WithM2 (M : Monad.Basic2) : sig
     type 'a t := 'a t and
     type ('u, 'a) m := ('u, 'a) M.t
 end
-module WithM3 (M : Monad.Basic3) : sig
+module M3 : functor (M : Monad.Basic3) -> sig
   include Traversable.S3 with
     type 'a t := 'a t and
     type ('u, 'v, 'a) f := ('u, 'v, 'a) M.t

@@ -48,7 +48,7 @@ module type S3 = sig
     ('p, 'q, 'a) t -> ('p, 'q, 'b) t -> ('p, 'q, 'a option * 'b option) t
 end
 
-module Make3(A : Basic3) = struct
+module Make3 (A : Basic3) = struct
   include A
   let align x = align_with id x
   let falign append = align_with (These.fold id id append)
@@ -61,12 +61,12 @@ module Make3(A : Basic3) = struct
   let pad_zip x = pad_zip_with (curry id) x
 end
 
-module Make2(A : Basic2) = Make3(struct
+module Make2 (A : Basic2) = Make3(struct
   type (_, 'p, 'a) t = ('p, 'a) A.t
   include (A : Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
 end)
 
-module Make(A : Basic) = Make2(struct
+module Make (A : Basic) = Make2(struct
   type (_, 'a) t = 'a A.t
   include (A : Basic with type 'a t := 'a A.t)
 end)

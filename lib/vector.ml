@@ -1,6 +1,6 @@
 open Fn
 
-module A = struct
+module Arr = struct
   type 'a t = 'a array
 
   let set = Array.set
@@ -31,20 +31,20 @@ end
 module AP = struct
   type 'a t = 'a array * 'a array
 
-  let len (l, r) = A.len l + A.len r
+  let len (l, r) = Arr.len l + Arr.len r
 
   let get (l, r) i =
-    if i < A.len l
-    then A.get l i
-    else A.get r (i - A.len l)
+    if i < Arr.len l
+    then Arr.get l i
+    else Arr.get r (i - Arr.len l)
 
   let set (l, r) i x =
-    if i < A.len l
-    then A.set l i x
-    else A.set r (i - A.len l) x
+    if i < Arr.len l
+    then Arr.set l i x
+    else Arr.set r (i - Arr.len l) x
 
   let fold f a (l, r) =
-    A.foldl f (A.foldl f a l) r
+    Arr.foldl f (Arr.foldl f a l) r
 end
 
 (* ceiling of a division *)
@@ -67,46 +67,46 @@ module Internal = struct
       fun a -> function
       | Leaf _ -> a
       | R_node (_, n) | B_node n ->
-        assert (A.len n > 0);
-        loop (a + 1) (A.get n 0) in
+        assert (Arr.len n > 0);
+        loop (a + 1) (Arr.get n 0) in
     loop 0 x
 
   let rec length = function
-    | Leaf x -> A.len x
+    | Leaf x -> Arr.len x
     | R_node (i, v) ->
-      assert (A.len i = A.len v);
-      A.get i (A.len i - 1)
+      assert (Arr.len i = Arr.len v);
+      Arr.get i (Arr.len i - 1)
     | B_node v as node ->
-      assert (A.len v > 0);
+      assert (Arr.len v > 0);
       let d = depth node in
       let item_sz = 1 lsl (d * _BITS) in
-      item_sz * (A.len v - 1) + length (A.get v (A.len v - 1))
+      item_sz * (Arr.len v - 1) + length (Arr.get v (Arr.len v - 1))
 
   let update_lengths = function
     | Leaf _ | B_node _ -> ()
     | R_node (is, vs) ->
-      assert (A.len is = A.len vs);
+      assert (Arr.len is = Arr.len vs);
       let sum = ref 0 in
-      for i = 0 to A.len vs - 1 do
-        sum := !sum + length (A.get vs i);
-        A.set is i !sum
+      for i = 0 to Arr.len vs - 1 do
+        sum := !sum + length (Arr.get vs i);
+        Arr.set is i !sum
       done
 
   let mk_rnode arr =
-    let res = R_node (A.make (A.len arr) 0, arr) in
+    let res = R_node (Arr.make (Arr.len arr) 0, arr) in
     update_lengths res;
     res
 
   (* returns index of a slot and new 'index' value *)
   let rr_search : int array -> int -> int -> int * int =
     fun sizes depth idx ->
-      assert (A.len sizes > 0);
-      assert (idx <= A.get sizes (A.len sizes - 1));
+      assert (Arr.len sizes > 0);
+      assert (idx <= Arr.get sizes (Arr.len sizes - 1));
       let start = idx lsr (_BITS * depth) in
-      assert (start < A.len sizes);
+      assert (start < Arr.len sizes);
       let rec loop n =
-        assert (n < A.len sizes);
-        let sz = A.get sizes n in
+        assert (n < Arr.len sizes);
+        let sz = Arr.get sizes n in
         if sz > idx
         then n
         else loop (n + 1) in
@@ -114,7 +114,7 @@ module Internal = struct
       let new_idx =
         if slot = 0
         then idx
-        else idx - A.get sizes (slot - 1) in
+        else idx - Arr.get sizes (slot - 1) in
       slot, new_idx
 
   let radix_search : int -> int -> int * int =
@@ -139,7 +139,7 @@ let get_leaf = function
 let get_rnode = function
   | R_node (i, v) -> i, v
   | B_node v ->
-    let sizes = A.make (A.len v) 0 in
+    let sizes = Arr.make (Arr.len v) 0 in
     update_lengths (R_node (sizes, v));
     sizes, v
   | _ -> assert false
@@ -150,8 +150,8 @@ let get_bnode = function
 
 let node_len : type a . a t -> int =
   function
-  | Leaf x -> A.len x
-  | R_node (_, x) | B_node x -> A.len x
+  | Leaf x -> Arr.len x
+  | R_node (_, x) | B_node x -> Arr.len x
 
 (* Concatenation is complex; move it to separate module *)
 module Concatenation = struct
@@ -209,23 +209,23 @@ module Concatenation = struct
     let
         (copy_to_node : a t -> int -> a t -> int -> int -> unit),
         (new_node : int -> a t) =
-      assert (A.len lnodes > 0);
-      match A.get lnodes 0 with
+      assert (Arr.len lnodes > 0);
+      match Arr.get lnodes 0 with
       | Leaf x ->
-        assert (A.len x > 0);
+        assert (Arr.len x > 0);
         (fun dst dst_off src ->
-          A.copy_to_from (get_leaf dst) dst_off (get_leaf src))
-        , fun n -> Leaf (A.make n (A.get x 0))
+          Arr.copy_to_from (get_leaf dst) dst_off (get_leaf src))
+        , fun n -> Leaf (Arr.make n (Arr.get x 0))
       | node ->
         let l, x = get_rnode node in
-        assert (A.len l = A.len x);
-        assert (A.len x > 0);
+        assert (Arr.len l = Arr.len x);
+        assert (Arr.len x > 0);
         (fun dst dst_off src ->
           let dst_ = snd (get_rnode dst) in
           let src_ = snd (get_rnode src) in
-          A.copy_to_from dst_ dst_off src_)
+          Arr.copy_to_from dst_ dst_off src_)
         , fun n ->
-          R_node (A.make n (A.get l 0), A.make n (A.get x 0)) in
+          R_node (Arr.make n (Arr.get l 0), Arr.make n (Arr.get x 0)) in
     let src_idx = ref 0 in
     let src_off = ref 0 in
     for i = 0 to AP.len lengths - 1 do
@@ -255,15 +255,15 @@ module Concatenation = struct
   (* compute indices after copying data *)
   let compute_indices : type a . a t array -> int array -> int array -> unit =
     fun xv xi lengths ->
-    assert (A.len xv = A.len xi);
-    assert (A.len xv = A.len lengths);
+    assert (Arr.len xv = Arr.len xi);
+    assert (Arr.len xv = Arr.len lengths);
     let sum = ref 0 in
-    for i = 0 to A.len lengths - 1 do
-      let len = A.get lengths i in
-      let node = A.get xv i in
+    for i = 0 to Arr.len lengths - 1 do
+      let len = Arr.get lengths i in
+      let node = Arr.get xv i in
       if len <> 0 then update_lengths node;
       sum := !sum + length node;
-      A.set xi i !sum
+      Arr.set xi i !sum
     done
 
   (* Merge two nodes of the same depth *)
@@ -271,11 +271,11 @@ module Concatenation = struct
     fun l r ->
     let _, lv = get_rnode l in
     let _, rv = get_rnode r in
-    assert (A.len lv > 0);
-    let nodes = A.len lv + A.len rv in
+    assert (Arr.len lv > 0);
+    let nodes = Arr.len lv + Arr.len rv in
     let subnodes =
       let sum a x = a + node_len x in
-      A.foldl sum (A.foldl sum 0 lv) rv in
+      Arr.foldl sum (Arr.foldl sum 0 lv) rv in
     let max_nodes = max_nodes_allowed subnodes in
     if max_nodes >= nodes
     then (* no balancing required *)
@@ -285,12 +285,12 @@ module Concatenation = struct
         if max_nodes <= _BRANCHING
         then max_nodes, 0
         else _BRANCHING, max_nodes - _BRANCHING in
-      let length_l = A.make len_l 0 in
-      let length_r = A.make len_r 0 in
+      let length_l = Arr.make len_l 0 in
+      let length_r = Arr.make len_r 0 in
       let lengths = length_l, length_r in
       assign_subnode_lengths (lv, rv) lengths;
-      let node_l = A.make len_l empty in
-      let node_r = A.make len_r empty in
+      let node_l = Arr.make len_l empty in
+      let node_r = Arr.make len_r empty in
       let new_nodes = node_l, node_r in
       copy_subnode_data (lv, rv) new_nodes lengths;
       compute_indices node_l length_l length_l;
@@ -307,12 +307,12 @@ module Concatenation = struct
 
   let leftmost = function
     | R_node (_, x) | B_node x ->
-      A.get x 0
+      Arr.get x 0
     | Leaf _ -> assert false
 
   let rightmost = function
     | R_node (_, x) | B_node x ->
-      A.get x (A.len x - 1)
+      Arr.get x (Arr.len x - 1)
     | Leaf _ -> assert false
 
   (* append vectors of the same depth and return vector that is one-level
@@ -333,8 +333,8 @@ module Concatenation = struct
     | n ->
       let li, lv = get_rnode l in
       let ri, rv = get_rnode r in
-      assert (A.len lv > 0);
-      assert (A.len rv > 0);
+      assert (Arr.len lv > 0);
+      assert (Arr.len rv > 0);
       let intermediate = append_same (rightmost l) (leftmost r) (n - 1) in
       let ii, iv = get_rnode intermediate in
       let overall = node_len l + node_len r - 2 + node_len intermediate in
@@ -342,24 +342,24 @@ module Concatenation = struct
         if overall > _BRANCHING
         then _BRANCHING, overall - _BRANCHING
         else overall, 0 in
-      let lnode = A.make ll empty in
-      let rnode = A.make lr empty in
+      let lnode = Arr.make ll empty in
+      let rnode = Arr.make lr empty in
       let ap = lnode, rnode in
       let idx = ref 0 in
-      for i = 0 to A.len lv - 2 do
-        AP.set ap !idx (A.get lv i);
+      for i = 0 to Arr.len lv - 2 do
+        AP.set ap !idx (Arr.get lv i);
         incr idx
       done;
-      for i = 0 to A.len iv - 1 do
-        AP.set ap !idx (A.get iv i);
+      for i = 0 to Arr.len iv - 1 do
+        AP.set ap !idx (Arr.get iv i);
         incr idx
       done;
-      for i = 1 to A.len rv - 1 do
-        AP.set ap !idx (A.get rv i);
+      for i = 1 to Arr.len rv - 1 do
+        AP.set ap !idx (Arr.get rv i);
         incr idx
       done;
-      let l = R_node (A.make ll 0, lnode) in
-      let r = R_node (A.make lr 0, rnode) in
+      let l = R_node (Arr.make ll 0, lnode) in
+      let r = R_node (Arr.make lr 0, rnode) in
       update_lengths l;
       update_lengths r;
       merge l r
@@ -380,8 +380,8 @@ module Concatenation = struct
         | _ when dl < dr -> append_same (add_layers l (dr - dl)) r dr
         | _ (* when dl > dr *) -> append_same l (add_layers r (dl - dr)) dl in
       match res with
-      | R_node (is, vs) when A.len vs = 1 ->
-        A.get vs 0
+      | R_node (is, vs) when Arr.len vs = 1 ->
+        Arr.get vs 0
       | _ -> res
 end
 
@@ -397,16 +397,16 @@ let get : type a . a t -> int -> a =
     let ns = length n in
     if ns - 1 < i || i < 0 then out_of_bounds i ns;
     let rec loop n i = function
-    | 0 -> A.get (get_leaf n) i
+    | 0 -> Arr.get (get_leaf n) i
     | d ->
       begin match n with
       | Leaf _ -> assert false
       | R_node (is, vs) ->
         let slot, new_i = rr_search is d i in
-        loop (A.get vs slot) new_i (d - 1)
+        loop (Arr.get vs slot) new_i (d - 1)
       | B_node vs ->
         let slot, new_i = radix_search d i in
-        loop (A.get vs slot) new_i (d - 1) end in
+        loop (Arr.get vs slot) new_i (d - 1) end in
     loop n i (depth n)
 
 let update : type a . a t -> int -> a -> a t =
@@ -415,23 +415,23 @@ let update : type a . a t -> int -> a -> a t =
     if ns - 1 < i || i < 0 then out_of_bounds i ns;
     let rec loop n i = function
     | 0 ->
-      let res = A.copy (get_leaf n) in
-      A.set res i x;
+      let res = Arr.copy (get_leaf n) in
+      Arr.set res i x;
       Leaf res
     | d ->
       begin match n with
       | Leaf _ -> assert false
       | R_node (is, vs) ->
         let slot, new_i = rr_search is d i in
-        let upd = loop (A.get vs slot) new_i (d - 1) in
-        let res = A.copy vs in
-        A.set res slot upd;
+        let upd = loop (Arr.get vs slot) new_i (d - 1) in
+        let res = Arr.copy vs in
+        Arr.set res slot upd;
         R_node (is, res)
       | B_node vs ->
         let slot, new_i = radix_search d i in
-        let upd = loop (A.get vs slot) new_i (d - 1) in
-        let res = A.copy vs in
-        A.set res slot upd;
+        let upd = loop (Arr.get vs slot) new_i (d - 1) in
+        let res = Arr.copy vs in
+        Arr.set res slot upd;
         B_node res end in
     loop n i (depth n)
 
@@ -446,10 +446,10 @@ let split_at : type a . a t -> int -> a t * a t =
       | i when node_len n = i -> Some n, None
       | i ->
         let a = get_leaf n in
-        let al = A.make i (A.get a 0) in
-        let ar = A.make (A.len a - i) (A.get a i) in
-        A.copy_to_from al 1 a 1       (i - 1);
-        A.copy_to_from ar 1 a (i + 1) (A.len a - i - 1);
+        let al = Arr.make i (Arr.get a 0) in
+        let ar = Arr.make (Arr.len a - i) (Arr.get a i) in
+        Arr.copy_to_from al 1 a 1       (i - 1);
+        Arr.copy_to_from ar 1 a (i + 1) (Arr.len a - i - 1);
         Some (Leaf al), Some (Leaf ar) end
     | d ->
       begin match n with
@@ -458,35 +458,35 @@ let split_at : type a . a t -> int -> a t * a t =
       | node when i = length node -> Some node, None
       | node ->
         let is, vs = get_rnode node in
-        assert (A.len is = A.len vs);
-        assert (A.len is > 0);
+        assert (Arr.len is = Arr.len vs);
+        assert (Arr.len is > 0);
         let slot, new_i = rr_search is d i in
-        let l, r = loop (A.get vs slot) new_i (d - 1) in
+        let l, r = loop (Arr.get vs slot) new_i (d - 1) in
         let len_l = if l = None then slot else slot + 1 in
-        let len_r = A.len vs - if r = None then slot + 1 else slot in
+        let len_r = Arr.len vs - if r = None then slot + 1 else slot in
         let nl =
           Some (
-            let lv = A.make len_l (A.get vs 0) in
+            let lv = Arr.make len_l (Arr.get vs 0) in
             for j = 1 to slot - 1 do
-              A.set lv j (A.get vs j)
+              Arr.set lv j (Arr.get vs j)
             done;
             begin match l with
             | None -> ()
-            | Some x -> A.set lv slot x end;
+            | Some x -> Arr.set lv slot x end;
             mk_rnode lv
           ) in
         let nr =
           Some (
-            let rv = A.make len_r (A.get vs 0) in
+            let rv = Arr.make len_r (Arr.get vs 0) in
             begin match r with
             | None ->
               for j = 0 to len_r - 1 do
-                A.set rv j (A.get vs (j + slot))
+                Arr.set rv j (Arr.get vs (j + slot))
               done
             | Some x ->
-              A.set rv 0 x;
+              Arr.set rv 0 x;
               for j = 1 to len_r - 1 do
-                A.set rv j (A.get vs (j + slot))
+                Arr.set rv j (Arr.get vs (j + slot))
               done end;
             mk_rnode rv
           ) in
@@ -508,16 +508,16 @@ let drop : type a . a t -> int -> a t =
     snd (split_at n (if i > sz then sz else i))
 
 let rec iter f = function
-  | Leaf x -> A.iter f x
-  | R_node (_, x) | B_node x -> A.iter (iter f) x
+  | Leaf x -> Arr.iter f x
+  | R_node (_, x) | B_node x -> Arr.iter (iter f) x
 
 let make_pb : unit -> (('a -> unit) * (unit -> 'a t)) =
   fun () ->
     let realloc_array a n =
-      assert (A.len a > n);
-      let res = A.make n (A.get a 0) in
+      assert (Arr.len a > n);
+      let res = Arr.make n (Arr.get a 0) in
       for i = 1 to n - 1 do
-        A.set res i (A.get a i)
+        Arr.set res i (Arr.get a i)
       done;
       res in
     let realloc = function
@@ -526,21 +526,21 @@ let make_pb : unit -> (('a -> unit) * (unit -> 'a t)) =
     | sz, B_node x -> B_node (realloc_array x sz)
     | _ -> assert false in
     let rec push_node n = function
-    | [] -> [ 1, B_node (A.make _BRANCHING n) ]
+    | [] -> [ 1, B_node (Arr.make _BRANCHING n) ]
     | (sz, node) :: t when sz < _BRANCHING ->
-      A.set (get_bnode node) sz n;
+      Arr.set (get_bnode node) sz n;
       (sz + 1, node) :: t
     | (sz, node) :: t ->
       assert (sz = _BRANCHING);
-      (1, B_node (A.make _BRANCHING n)) :: push_node node t in
+      (1, B_node (Arr.make _BRANCHING n)) :: push_node node t in
     let push_elem e = function
-    | [] -> [ 1, Leaf (A.make _BRANCHING e) ]
+    | [] -> [ 1, Leaf (Arr.make _BRANCHING e) ]
     | (sz, node) :: t when sz < _BRANCHING ->
-      A.set (get_leaf node) sz e;
+      Arr.set (get_leaf node) sz e;
       (sz + 1, node) :: t
     | (sz, node) :: t ->
       assert (sz = _BRANCHING);
-      (1, Leaf (A.make _BRANCHING e)) :: push_node node t in
+      (1, Leaf (Arr.make _BRANCHING e)) :: push_node node t in
     let res = ref [] in
     let push x = res := push_elem x !res in
     let rec build = function
@@ -585,17 +585,17 @@ include Foldable.Make(struct
   type nonrec 'a t = 'a t
 
   let rec foldl f a = function
-  | Leaf x -> A.foldl f a x
-  | R_node (_, x) | B_node x -> A.foldl (foldl f) a x
+  | Leaf x -> Arr.foldl f a x
+  | R_node (_, x) | B_node x -> Arr.foldl (foldl f) a x
 
   let rec foldr f a = function
-  | Leaf x -> A.foldr f a x
-  | R_node (_, x) | B_node x -> A.foldr (fun x a -> foldr f a x) a x
+  | Leaf x -> Arr.foldr f a x
+  | R_node (_, x) | B_node x -> Arr.foldr (fun x a -> foldr f a x) a x
 end)
 
 let rec foldr' f a = function
-  | Leaf x -> A.foldr' f a x
-  | R_node (_, x) | B_node x -> A.foldr' (fun x a -> foldr' f a x) a x
+  | Leaf x -> Arr.foldr' f a x
+  | R_node (_, x) | B_node x -> Arr.foldr' (fun x a -> foldr' f a x) a x
 
 let to_list x = foldr' Clarity_list._Cons [] x
 let of_list x =
@@ -624,7 +624,7 @@ include Align.Make(struct
     build ()
 end)
 
-module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
+module A3 (A : Applicative.Basic3) = Traversable.Make3(struct
   type nonrec 'a t = 'a t
   type ('u, 'v, 'a) f = ('u, 'v, 'a) A.t
 
@@ -641,18 +641,18 @@ module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
     foldr (compose Ap.discard_left f) (defer Ap.pure ())
 end)
 
-module WithA2(A : Applicative.Basic2) = WithA3(struct
+module A2 (A : Applicative.Basic2) = A3(struct
   type (_, 'p, 'a) t = ('p, 'a) A.t
   include (A : Applicative.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
 end)
 
-module WithA(A : Applicative.Basic) = WithA2(struct
+module A (A : Applicative.Basic) = A2(struct
   type (_, 'a) t = 'a A.t
   include (A : Applicative.Basic with type 'a t := 'a A.t)
 end)
 
-module WithM3(M : Monad.Basic3) = struct
-  include WithA3(M)
+module M3 (M : Monad.Basic3) = struct
+  include A3(M)
 
   let foldr_m f a l =
     let g k x z = M.bind k (f x z) in
@@ -663,12 +663,12 @@ module WithM3(M : Monad.Basic3) = struct
     foldr g (const M.pure) l a
 end
 
-module WithM2(M : Monad.Basic2) = WithM3(struct
+module M2 (M : Monad.Basic2) = M3(struct
   type (_, 'p, 'a) t = ('p, 'a) M.t
   include (M : Monad.Basic2 with type ('p, 'a) t := ('p, 'a) M.t)
 end)
 
-module WithM(M : Monad.Basic) = WithM2(struct
+module M (M : Monad.Basic) = M2(struct
   type (_, 'a) t = 'a M.t
   include (M : Monad.Basic with type 'a t := 'a M.t)
 end)

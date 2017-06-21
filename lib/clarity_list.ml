@@ -71,7 +71,7 @@ end)
 
 let foldr' f a x = foldl (flip f) a (rev x)
 
-module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
+module A3 (A : Applicative.Basic3) = Traversable.Make3(struct
   type nonrec 'a t = 'a t
   type ('u, 'v, 'a) f = ('u, 'v, 'a) A.t
 
@@ -86,18 +86,18 @@ module WithA3(A : Applicative.Basic3) = Traversable.Make3(struct
     foldr (compose Ap.discard_left f) (defer Ap.pure ())
 end)
 
-module WithA2(A : Applicative.Basic2) = WithA3(struct
+module A2 (A : Applicative.Basic2) = A3(struct
   type (_, 'p, 'a) t = ('p, 'a) A.t
   include (A : Applicative.Basic2 with type ('p, 'a) t := ('p, 'a) A.t)
 end)
 
-module WithA(A : Applicative.Basic) = WithA2(struct
+module A (A : Applicative.Basic) = A2(struct
   type (_, 'a) t = 'a A.t
   include (A : Applicative.Basic with type 'a t := 'a A.t)
 end)
 
-module WithM3(M : Monad.Basic3) = struct
-  include WithA3(M)
+module M3 (M : Monad.Basic3) = struct
+  include A3(M)
 
   let foldr_m f a l =
     let g k x z = M.bind k (f x z) in
@@ -108,12 +108,12 @@ module WithM3(M : Monad.Basic3) = struct
     foldr g (const M.pure) l a
 end
 
-module WithM2(M : Monad.Basic2) = WithM3(struct
+module M2 (M : Monad.Basic2) = M3(struct
   type (_, 'p, 'a) t = ('p, 'a) M.t
   include (M : Monad.Basic2 with type ('p, 'a) t := ('p, 'a) M.t)
 end)
 
-module WithM(M : Monad.Basic) = WithM2(struct
+module M (M : Monad.Basic) = M2(struct
   type (_, 'a) t = 'a M.t
   include (M : Monad.Basic with type 'a t := 'a M.t)
 end)
