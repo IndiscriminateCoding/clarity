@@ -127,9 +127,15 @@ module Get = struct
   let idx = ref 0
   ;; iter (fun x -> assert (x = get src !idx); incr idx) src
 
-  ;;
-  try
+  ;; try
     ignore @@ get src (length src);
+    assert false
+  with
+  | Out_of_bounds _ -> ()
+  | _ -> assert false
+
+  ;; try
+    ignore @@ get src (-1);
     assert false
   with
   | Out_of_bounds _ -> ()
@@ -207,6 +213,8 @@ module Split_at = struct
     check_indices l;
     check_indices r
   done
+
+  ;; ignore @@ split_at src (length src + 1000)
 
   ;; printf "Vector.Split_at OK\n"
 end

@@ -389,13 +389,14 @@ let append = Concatenation.append
 
 exception Out_of_bounds of { index : int; size : int }
 
-let out_of_bounds index size =
-  raise (Out_of_bounds { index; size })
+let check_bounds n index =
+  let size = length n in
+  if size - 1 < index || index < 0
+    then raise (Out_of_bounds { index; size })
 
 let get : type a . a t -> int -> a =
   fun n i ->
-    let ns = length n in
-    if ns - 1 < i || i < 0 then out_of_bounds i ns;
+    check_bounds n i;
     let rec loop n i = function
     | 0 -> Arr.get (get_leaf n) i
     | d ->
@@ -411,8 +412,7 @@ let get : type a . a t -> int -> a =
 
 let update : type a . a t -> int -> a -> a t =
   fun n i x ->
-    let ns = length n in
-    if ns - 1 < i || i < 0 then out_of_bounds i ns;
+    check_bounds n i;
     let rec loop n i = function
     | 0 ->
       let res = Arr.copy (get_leaf n) in
@@ -437,8 +437,8 @@ let update : type a . a t -> int -> a -> a t =
 
 let split_at : type a . a t -> int -> a t * a t =
   fun n i ->
-    let ns = length n in
-    if ns < i || i < 0 then out_of_bounds i ns;
+    let size = length n in
+    if i < 0 then raise (Out_of_bounds { index = i; size });
     let rec loop n i = function
     | 0 ->
       begin match i with
@@ -455,7 +455,7 @@ let split_at : type a . a t -> int -> a t * a t =
       begin match n with
       | Leaf _ -> assert false
       | node when i = 0 -> None, Some node
-      | node when i = length node -> Some node, None
+      | node when i >= length node -> Some node, None
       | node ->
         let is, vs = get_rnode node in
         assert (Arr.len is = Arr.len vs);

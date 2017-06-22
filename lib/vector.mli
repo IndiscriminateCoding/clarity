@@ -52,19 +52,19 @@ val update : 'a t -> int -> 'a -> 'a t
   of [v] of length [i] and second is the suffix of [v] starting at [i].
   "Effectively constant".
 
-  Raise [Out_of_bounds] when [i] is outside of [v] bounds. *)
+  Raise [Out_of_bounds] when [i] is negative. *)
 val split_at : 'a t -> int -> 'a t * 'a t
 
 (** [take v i] returns the prefix of [v] of length [i]. "Effectively
   constant".
 
-  Raise [Out_of_bounds] when [i] is outside of [v] bounds. *)
+  Raise [Out_of_bounds] when [i] is negative. *)
 val take : 'a t -> int -> 'a t
 
 (** [drop v i] returns the suffix of [v] starting at [i]. "Effectively
   constant".
 
-  Raise [Out_of_bounds] when [i] is outside of [v] bounds. *)
+  Raise [Out_of_bounds] when [i] is negative. *)
 val drop : 'a t -> int -> 'a t
 
 (** [iter f v] iterates over [v] applying [f] to each element. *)
