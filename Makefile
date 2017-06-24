@@ -15,7 +15,7 @@ clean:
 	rm -rf _build/ lib.docdir clarity.install lib/.merlin
 
 tests: clean
-	jbuilder runtest
+	jbuilder runtest --no-buffer
 
 .PHONY: build install uninstall doc clean tests
 

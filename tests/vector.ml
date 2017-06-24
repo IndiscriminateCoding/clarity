@@ -6,6 +6,8 @@ open Vector.Internal
 
 module A = Array
 
+let ok s = printf "Vector.%s OK\n" s; flush stdout
+
 let rec check_bnode check_size = function
   | B_node vs ->
     if check_size
@@ -62,7 +64,7 @@ module Concat = struct
   let dst_lst = to_list dst
   ;; assert (to_list src_a @ to_list src_b = dst_lst)
   ;; assert (List.length dst_lst = length dst)
-  ;; printf "Vector.Concat OK\n"
+  ;; ok "Concat"
 end
 
 module Concat2 = struct
@@ -98,7 +100,7 @@ module Concat2 = struct
   done
   done
 
-  ;; printf "Vector.Concat2 OK\n"
+  ;; ok "Concat2"
 end
 
 module RR_search = struct
@@ -111,7 +113,7 @@ module RR_search = struct
   ;; assert (slot = 2)
   ;; assert (new_idx = 29)
 
-  ;; printf "Vector.RR_search OK\n"
+  ;; ok "RR_search"
 end
 
 module Get = struct
@@ -141,7 +143,7 @@ module Get = struct
   | Out_of_bounds _ -> ()
   | _ -> assert false
 
-  ;; printf "Vector.Get OK\n"
+  ;; ok "Get"
 end
 
 module Update = struct
@@ -160,7 +162,7 @@ module Update = struct
     assert (get (update src i upd_val) i = upd_val)
   done
 
-  ;; printf "Vector.Update OK\n"
+  ;; ok "Update"
 end
 
 module Map = struct
@@ -184,7 +186,7 @@ module Map = struct
   ;; check_bnode true dst
   ;; assert (depth dst = 1)
 
-  ;; printf "Vector.Map OK\n"
+  ;; ok "Map"
 end
 
 module Split_at = struct
@@ -216,7 +218,7 @@ module Split_at = struct
 
   ;; ignore @@ split_at src (length src + 1000)
 
-  ;; printf "Vector.Split_at OK\n"
+  ;; ok "Split_at"
 end
 
 module Align = struct
@@ -251,6 +253,6 @@ module Align = struct
   ;; assert (to_list a = lefts c)
   ;; assert (to_list b = rights c)
 
-  ;; printf "Vector.Align OK\n"
+  ;; ok "Align"
 end
 
