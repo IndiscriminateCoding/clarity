@@ -565,7 +565,7 @@ include Monad.Make(struct
   let map : type a b . (a -> b) -> a t -> b t =
     fun f x ->
       let push, build = make_pb () in
-      iter (compose push f) x;
+      iter (push % f) x;
       build ()
 
   let bind f x =
@@ -638,7 +638,7 @@ module A3 (A : Applicative.Basic3) = Traversable.Make3(struct
     Ap.map of_list ls
 
   let traverse_ f =
-    foldr (compose Ap.discard_left f) (defer Ap.pure ())
+    foldr (Ap.discard_left % f) (defer Ap.pure ())
 end)
 
 module A2 (A : Applicative.Basic2) = A3(struct

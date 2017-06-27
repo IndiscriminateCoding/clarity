@@ -57,7 +57,7 @@ module Make3 (A : Basic3) = struct
       (fun l -> Some l, None)
       (fun r -> None, Some r)
       (fun l r -> Some l, Some r) in
-    align_with (compose (uncurry f) g) x
+    align_with (uncurry f % g) x
   let pad_zip x = pad_zip_with (curry id) x
 end
 

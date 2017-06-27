@@ -15,7 +15,7 @@ let rev_mapi f l =
 let length = List.length
 let sort ?(cmp = compare) = List.stable_sort cmp
 let append l = rev_append (rev l)
-let mapi f = compose (rev_mapi f) rev
+let mapi f = rev_mapi f % rev
 let filter = List.filter
 
 let intersperse x =
@@ -29,12 +29,12 @@ let intersperse x =
 include Monad.Make(struct
   type nonrec 'a t = 'a t
 
-  let map f = compose (rev_map f) rev
+  let map f = rev_map f % rev
   let pure x = [ x ]
   let bind f x =
     let rec loop a = function
       | [] -> a
-      | h :: t -> loop (compose a (append (f h))) t
+      | h :: t -> loop (a % append (f h)) t
   in loop id x []
   let ap f x =
     if f = []
@@ -83,7 +83,7 @@ module A3 (A : Applicative.Basic3) = Traversable.Make3(struct
       ap (map _Cons (f x)) l in
     foldr cf (defer Ap.pure [])
   let traverse_ f =
-    foldr (compose Ap.discard_left f) (defer Ap.pure ())
+    foldr (Ap.discard_left % f) (defer Ap.pure ())
 end)
 
 module A2 (A : Applicative.Basic2) = A3(struct
