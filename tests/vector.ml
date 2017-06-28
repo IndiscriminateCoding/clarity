@@ -256,3 +256,25 @@ module Align = struct
   ;; ok "Align"
 end
 
+module Bind = struct
+  let mk =
+    let n = ref (-1) in
+    fun l ->
+      Leaf (A.init l (fun _ -> incr n; !n))
+  let mk n = mk_rnode (A.init n (fun _ -> mk 5))
+  let mk n = mk_rnode (A.init n (fun _ -> mk 4))
+
+  ;;
+  for i = 1 to 16 do
+  for j = 1 to 16 do
+    let a = mk i in
+    let b =
+      a >>= fun x ->
+      Vector.of_list @@ List.join @@ List.repeat j [ x ] in
+    assert (length b = length a * j)
+  done
+  done
+
+ ;; ok "Bind"
+end
+
