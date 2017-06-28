@@ -22,7 +22,7 @@ module type S = sig
   type _ t
   include Basic with type 'a t := 'a t
   include Functor.S with type 'a t := 'a t
-  val ( <*> ) : ('a -> 'b) t -> (unit -> 'a t) -> 'b t
+  val (<*>) : ('a -> 'b) t -> (unit -> 'a t) -> 'b t
   val discard_left : 'a t -> (unit -> 'b t) -> 'b t
   val discard_right : 'a t -> (unit -> 'b t) -> 'a t
   val repeat : int -> 'a t -> 'a list t
@@ -34,7 +34,7 @@ module type S2 = sig
   type (_, _) t
   include Basic2 with type ('p, 'a) t := ('p, 'a) t
   include Functor.S2 with type ('p, 'a) t := ('p, 'a) t
-  val ( <*> ) : ('p, 'a -> 'b) t -> (unit -> ('p, 'a) t) -> ('p, 'b) t
+  val (<*>) : ('p, 'a -> 'b) t -> (unit -> ('p, 'a) t) -> ('p, 'b) t
   val discard_left : ('p, 'a) t -> (unit -> ('p, 'b) t) -> ('p, 'b) t
   val discard_right : ('p, 'a) t -> (unit -> ('p, 'b) t) -> ('p, 'a) t
   val repeat : int -> ('p, 'a) t -> ('p, 'a list) t
@@ -46,7 +46,7 @@ module type S3 = sig
   type (_, _, _) t
   include Basic3 with type ('p, 'q, 'a) t := ('p, 'q, 'a) t
   include Functor.S3 with type ('p, 'q, 'a) t := ('p, 'q, 'a) t
-  val ( <*> ) :
+  val (<*>) :
     ('p, 'q, 'a -> 'b) t -> (unit -> ('p, 'q, 'a) t) -> ('p, 'q, 'b) t
   val discard_left :
     ('p, 'q, 'a) t -> (unit -> ('p, 'q, 'b) t) -> ('p, 'q, 'b) t
