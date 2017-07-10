@@ -11,6 +11,7 @@ module Arr = struct
   let iter = Array.iter
   let foldl = Array.fold_left
   let foldr' f a x = Array.fold_right f x a
+  let blit = Array.blit
 
   let foldr : type a x . (x -> (unit -> a) -> a) -> (unit -> a) -> x t -> a =
     fun f a x ->
@@ -19,12 +20,6 @@ module Arr = struct
         then a ()
         else f (get x idx) (fun () -> loop a (idx + 1)) in
       loop a 0
-
-  let copy_to_from : 'a array -> int -> 'a array -> int -> int -> unit =
-    fun dst dst_off src src_off len ->
-      for i = 0 to len - 1 do
-        set dst (i + dst_off) (get src (i + src_off))
-      done
 end
 
 (* Array pair as a single data-type *)
@@ -213,17 +208,17 @@ module Concatenation = struct
       match Arr.get lnodes 0 with
       | Leaf x ->
         assert (Arr.len x > 0);
-        (fun dst dst_off src ->
-          Arr.copy_to_from (get_leaf dst) dst_off (get_leaf src))
+        (fun src src_off dst ->
+          Arr.blit (get_leaf src) src_off (get_leaf dst))
         , fun n -> Leaf (Arr.make n (Arr.get x 0))
       | node ->
         let l, x = get_rnode node in
         assert (Arr.len l = Arr.len x);
         assert (Arr.len x > 0);
-        (fun dst dst_off src ->
+        (fun src src_off dst ->
           let dst_ = snd (get_rnode dst) in
           let src_ = snd (get_rnode src) in
-          Arr.copy_to_from dst_ dst_off src_)
+          Arr.blit src_ src_off dst_)
         , fun n ->
           R_node (Arr.make n (Arr.get l 0), Arr.make n (Arr.get x 0)) in
     let src_idx = ref 0 in
@@ -242,7 +237,7 @@ module Concatenation = struct
         | nn_off ->
           let src_node = AP.get src_v !src_idx in
           let sz = min (new_len - nn_off) (node_len src_node - !src_off) in
-          copy_to_node nn nn_off src_node !src_off sz;
+          copy_to_node src_node !src_off nn nn_off sz;
           src_off := !src_off + sz;
           if !src_off = node_len src_node
             then (src_off := 0; incr src_idx);
@@ -346,6 +341,7 @@ module Concatenation = struct
       let rnode = Arr.make lr empty in
       let ap = lnode, rnode in
       let idx = ref 0 in
+      (* TODO: use blit-like function *)
       for i = 0 to Arr.len lv - 2 do
         AP.set ap !idx (Arr.get lv i);
         incr idx
@@ -448,8 +444,8 @@ let split_at : type a . a t -> int -> a t * a t =
         let a = get_leaf n in
         let al = Arr.make i (Arr.get a 0) in
         let ar = Arr.make (Arr.len a - i) (Arr.get a i) in
-        Arr.copy_to_from al 1 a 1       (i - 1);
-        Arr.copy_to_from ar 1 a (i + 1) (Arr.len a - i - 1);
+        Arr.blit a 1       al 1 (i - 1);
+        Arr.blit a (i + 1) ar 1 (Arr.len a - i - 1);
         Some (Leaf al), Some (Leaf ar) end
     | d ->
       begin match n with
