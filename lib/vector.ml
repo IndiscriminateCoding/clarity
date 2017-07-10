@@ -46,10 +46,15 @@ end
 let ceil_div a b = 1 + (a - 1) / b
 
 module Internal = struct
-  let _BRANCHING = 32
   let _BITS = 5
+  let _BRANCHING = 1 lsl _BITS
   let _EXTRA_STEPS = 2
   let _SKIP_SIZE = _BRANCHING - ceil_div _EXTRA_STEPS 2
+
+  let check_depth =
+    let max_depth = if Sys.int_size = 31 then 6 else 12 in
+    fun d ->
+      if d > max_depth then failwith "clarity-vector-too-large"
 
   type 'a t =
     | Leaf of 'a array
@@ -74,6 +79,7 @@ module Internal = struct
     | B_node v as node ->
       assert (Arr.len v > 0);
       let d = depth node in
+      check_depth d;
       let item_sz = 1 lsl (d * _BITS) in
       item_sz * (Arr.len v - 1) + length (Arr.get v (Arr.len v - 1))
 
@@ -97,6 +103,7 @@ module Internal = struct
     fun sizes depth idx ->
       assert (Arr.len sizes > 0);
       assert (idx <= Arr.get sizes (Arr.len sizes - 1));
+      check_depth depth;
       let start = idx lsr (_BITS * depth) in
       assert (start < Arr.len sizes);
       let rec loop n =
@@ -114,6 +121,7 @@ module Internal = struct
 
   let radix_search : int -> int -> int * int =
     fun depth idx ->
+      check_depth depth;
       let shift = _BITS * depth in
       let slot = idx lsr shift in
       slot, idx - slot lsl shift
