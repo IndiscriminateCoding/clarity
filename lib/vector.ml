@@ -566,23 +566,20 @@ include Monad.Make(struct
 
   let pure x = Leaf [| x |]
 
-  let map : type a b . (a -> b) -> a t -> b t =
-    fun f x ->
-      let push, build = make_pb () in
-      iter (push % f) x;
-      build ()
-
   let bind f x =
-    let res = ref empty in
-    iter (fun x -> res := append !res (f x)) x;
-    !res
+    let push, build = make_pb () in
+    iter (fun y -> iter push (f y)) x;
+    build ()
+
   let ap f x =
     if f = empty
     then empty
     else let x = x () in
-      flip bind f @@ fun f ->
-      flip bind x @@ fun x ->
-      pure (f x)
+      let push, build = make_pb () in
+      iter (fun f -> iter (push % f) x) f;
+      build ()
+
+  let map f x = ap (pure f) (const x)
 end)
 
 include Foldable.Make(struct
