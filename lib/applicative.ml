@@ -69,15 +69,13 @@ module Make3 (A : Basic3) = struct
     let rec r cnt (xl : ('a, 'b, 'c list) t) =
       if cnt <= 0
       then xl
-      else r (cnt - 1) (map (fun h t -> h :: t) x <*> const xl)
-    in
+      else r (cnt - 1) (map (fun h t -> h :: t) x <*> const xl) in
     r cnt (pure [])
   let repeat_ cnt x =
     let rec r cnt xl =
       if cnt <= 0
       then xl
-      else r (cnt - 1) (discard_left x (const xl))
-    in
+      else r (cnt - 1) (discard_left x (const xl)) in
     r cnt (pure ())
   let rec forever x = discard_left x (defer forever x)
 end

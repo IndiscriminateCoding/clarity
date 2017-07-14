@@ -73,16 +73,10 @@ module Concat2 = struct
     fun l ->
       Leaf (A.init l (fun _ -> incr n; !n))
 
-  let vals = A.init 31 (fun i -> i + 1)
-
   ;;
-  for a = 0 to A.length vals - 1 do
-  for b = 0 to A.length vals - 1 do
-  for c = 0 to A.length vals - 1 do
-    let a = A.get vals a in
-    let b = A.get vals b in
-    let c = A.get vals c in
-
+  for a = 1 to _BRANCHING - 1 do
+  for b = 1 to _BRANCHING - 1 do
+  for c = 1 to _BRANCHING - 1 do
     let mk n = mk_rnode (A.init n (fun _ -> mk c)) in
     let src_a = mk b in
     let src_b = mk a in
@@ -94,8 +88,7 @@ module Concat2 = struct
     let src_b = map (fun x -> x) src_b in
     let src_a = append src_a src_b in
     let src_b = append src_b src_a in
-    check_indices src_b;
-    flush stdout
+    check_indices src_b
   done
   done
   done

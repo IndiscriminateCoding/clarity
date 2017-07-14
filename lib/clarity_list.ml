@@ -34,8 +34,8 @@ include Monad.Make(struct
   let bind f x =
     let rec loop a = function
       | [] -> a
-      | h :: t -> loop (a % append (f h)) t
-  in loop id x []
+      | h :: t -> loop (a % append (f h)) t in
+    loop id x []
   let ap f x =
     if f = []
     then []
