@@ -16,14 +16,14 @@ The goal of this project is to make pure functional programming idioms as useful
 let long  = List.map (fun x -> Some x) a
 let short = List.map _Some x
 ```
-* Applicative operator `ap` and it's infix version `<~>` are "lazy" by it's second argument. This allows for an applicative to "fail-fast" and don't compute unneeded values. "Strict" versions are called `ap'` and `<\*>` respectively. "Laziness" here is just (unit -> 'a) closure, so you can use function combinators from Fn module for convenience:
+* Applicative operator `ap` and it's infix version `(<~>)` are "lazy" by it's second argument. This allows for an applicative to "fail-fast" and don't compute unneeded values. "Strict" versions are called `ap'` and `(<*>)` respectively. "Laziness" here is just (unit -> 'a) closure, so you can use function combinators from Fn module for convenience:
 ```ocaml
 open Clarity
 open Option
 
 (*
-val (<*>) : ('a -> 'b) option -> 'a option -> 'b option
-val (<~>) : ('a -> 'b) option -> (unit -> 'a option) -> 'b option
+val (<*>) : ('a -> 'b) t -> 'a t -> 'b t
+val (<~>) : ('a -> 'b) t -> (unit -> 'a t) -> 'b t
 
 val serialize : int -> int -> string -> string
 val idx : int option
