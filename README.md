@@ -16,24 +16,29 @@ The goal of this project is to make pure functional programming idioms as useful
 let long  = List.map (fun x -> Some x) a
 let short = List.map _Some x
 ```
-* Applicative operator (<\*>) are "lazy" by it's second argument. This allows for an applicative to "fail-fast" and don't compute unneeded values. "Laziness" here is just (unit -> 'a) closure, so you can use function combinators from Fn module for convenience:
+* Applicative operator `ap` and it's infix version `<~>` are "lazy" by it's second argument. This allows for an applicative to "fail-fast" and don't compute unneeded values. "Strict" versions are called `ap'` and `<\*>` respectively. "Laziness" here is just (unit -> 'a) closure, so you can use function combinators from Fn module for convenience:
 ```ocaml
 open Clarity
+open Option
+
+(*
+val (<*>) : ('a -> 'b) option -> 'a option -> 'b option
+val (<~>) : ('a -> 'b) option -> (unit -> 'a option) -> 'b option
 
 val serialize : int -> int -> string -> string
 val idx : int option
-val long_computation : int -> int Option.t
-val title : string Option.t
+val long_computation : int -> int option
+val title : string option
+*)
 
 open Fn
-open Option
 
 let res : string Option.t =
   map serialize idx
-    <*> defer long_computation 1024
-    <*> const title
+    <~> defer long_computation 1024
+    <*> title
 ```
-* Right folds are also "lazy" by "accumulator" argument of a folding function. This allows for shortcut when function no more needs data. For example, here is 'any' function from Foldable module that checks if at least one element of a Foldable satisfies given predicate:
+* Right folds are also "lazy" by "accumulator" argument of a folding function. Strict right fold is called `foldr'`. This allows for shortcut when function no more needs data. For example, here is `any` function from Foldable module that checks if at least one element of a Foldable satisfies given predicate:
 ```ocaml
 let any p = foldr (fun x a -> p x || a ()) false
 ```
