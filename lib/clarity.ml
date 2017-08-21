@@ -24,3 +24,8 @@ module Vector = Vector
 module Void = Void
 module Writer = Writer
 
+(* This modules is exported for testing purposes only *)
+module Internal = struct
+  module Vector = Vector_internal
+end
+

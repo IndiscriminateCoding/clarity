@@ -4,22 +4,7 @@
   operations like getting element / updating at index, appending and
   splitting. *)
 
-(** This module is for internal use only; don't use it outside of Clarity *)
-module Internal : sig
-  type 'a t =
-    | Leaf of 'a array
-    | R_node of int array * 'a t array
-    | B_node of 'a t array
-
-  val _BRANCHING : int
-  val _BITS : int
-
-  val depth : 'a t -> int
-  val mk_rnode : 'a t array -> 'a t
-  val rr_search : int array -> int -> int -> int * int
-end
-
-type 'a t = 'a Internal.t
+type 'a t
 
 exception Out_of_bounds of { index : int; size : int }
 

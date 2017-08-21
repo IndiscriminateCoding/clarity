@@ -1,8 +1,7 @@
 open Printf
 
 open Clarity
-open Vector
-open Vector.Internal
+open Internal.Vector
 
 module A = Array
 
@@ -263,7 +262,7 @@ module Bind = struct
     let a = mk i in
     let b =
       a >>= fun x ->
-      Vector.of_list @@ List.join @@ List.repeat j [ x ] in
+      of_list @@ List.join @@ List.repeat j [ x ] in
     assert (length b = length a * j)
   done
   done
