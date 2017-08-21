@@ -45,89 +45,85 @@ end
 (* ceiling of a division *)
 let ceil_div a b = 1 + (a - 1) / b
 
-module Internal = struct
-  let _BITS = 5
-  let _BRANCHING = 1 lsl _BITS
-  let _EXTRA_STEPS = 2
-  let _SKIP_SIZE = _BRANCHING - ceil_div _EXTRA_STEPS 2
+let _BITS = 5
+let _BRANCHING = 1 lsl _BITS
+let _EXTRA_STEPS = 2
+let _SKIP_SIZE = _BRANCHING - ceil_div _EXTRA_STEPS 2
 
-  let check_depth =
-    let max_depth = if Sys.int_size = 31 then 6 else 12 in
-    fun d ->
-      if d > max_depth then failwith "clarity-vector-too-large"
+let check_depth =
+  let max_depth = if Sys.int_size = 31 then 6 else 12 in
+  fun d ->
+    if d > max_depth then failwith "clarity-vector-too-large"
 
-  type 'a t =
-    | Leaf of 'a array
-    | R_node of int array * 'a t array
-    | B_node of 'a t array
+type 'a t =
+  | Leaf of 'a array
+  | R_node of int array * 'a t array
+  | B_node of 'a t array
 
-  (* Depth of a tree *)
-  let depth x =
-    let rec loop : type a . int -> a t -> int =
-      fun a -> function
-      | Leaf _ -> a
-      | R_node (_, n) | B_node n ->
-        assert (Arr.len n > 0);
-        loop (a + 1) (Arr.get n 0) in
-    loop 0 x
+(* Depth of a tree *)
+let depth x =
+  let rec loop : type a . int -> a t -> int =
+    fun a -> function
+    | Leaf _ -> a
+    | R_node (_, n) | B_node n ->
+      assert (Arr.len n > 0);
+      loop (a + 1) (Arr.get n 0) in
+  loop 0 x
 
-  let rec length = function
-    | Leaf x -> Arr.len x
-    | R_node (i, v) ->
-      assert (Arr.len i = Arr.len v);
-      Arr.get i (Arr.len i - 1)
-    | B_node v as node ->
-      assert (Arr.len v > 0);
-      let d = depth node in
-      check_depth d;
-      let item_sz = 1 lsl (d * _BITS) in
-      item_sz * (Arr.len v - 1) + length (Arr.get v (Arr.len v - 1))
+let rec length = function
+  | Leaf x -> Arr.len x
+  | R_node (i, v) ->
+    assert (Arr.len i = Arr.len v);
+    Arr.get i (Arr.len i - 1)
+  | B_node v as node ->
+    assert (Arr.len v > 0);
+    let d = depth node in
+    check_depth d;
+    let item_sz = 1 lsl (d * _BITS) in
+    item_sz * (Arr.len v - 1) + length (Arr.get v (Arr.len v - 1))
 
-  let update_lengths = function
-    | Leaf _ | B_node _ -> ()
-    | R_node (is, vs) ->
-      assert (Arr.len is = Arr.len vs);
-      let sum = ref 0 in
-      for i = 0 to Arr.len vs - 1 do
-        sum := !sum + length (Arr.get vs i);
-        Arr.set is i !sum
-      done
+let update_lengths = function
+  | Leaf _ | B_node _ -> ()
+  | R_node (is, vs) ->
+    assert (Arr.len is = Arr.len vs);
+    let sum = ref 0 in
+    for i = 0 to Arr.len vs - 1 do
+      sum := !sum + length (Arr.get vs i);
+      Arr.set is i !sum
+    done
 
-  let mk_rnode arr =
-    let res = R_node (Arr.make (Arr.len arr) 0, arr) in
-    update_lengths res;
-    res
+let mk_rnode arr =
+  let res = R_node (Arr.make (Arr.len arr) 0, arr) in
+  update_lengths res;
+  res
 
-  (* returns index of a slot and new 'index' value *)
-  let rr_search : int array -> int -> int -> int * int =
-    fun sizes depth idx ->
-      assert (Arr.len sizes > 0);
-      assert (idx <= Arr.get sizes (Arr.len sizes - 1));
-      check_depth depth;
-      let start = idx lsr (_BITS * depth) in
-      assert (start < Arr.len sizes);
-      let rec loop n =
-        assert (n < Arr.len sizes);
-        let sz = Arr.get sizes n in
-        if sz > idx
-        then n
-        else loop (n + 1) in
-      let slot = loop start in
-      let new_idx =
-        if slot = 0
-        then idx
-        else idx - Arr.get sizes (slot - 1) in
-      slot, new_idx
+(* returns index of a slot and new 'index' value *)
+let rr_search : int array -> int -> int -> int * int =
+  fun sizes depth idx ->
+    assert (Arr.len sizes > 0);
+    assert (idx <= Arr.get sizes (Arr.len sizes - 1));
+    check_depth depth;
+    let start = idx lsr (_BITS * depth) in
+    assert (start < Arr.len sizes);
+    let rec loop n =
+      assert (n < Arr.len sizes);
+      let sz = Arr.get sizes n in
+      if sz > idx
+      then n
+      else loop (n + 1) in
+    let slot = loop start in
+    let new_idx =
+      if slot = 0
+      then idx
+      else idx - Arr.get sizes (slot - 1) in
+    slot, new_idx
 
-  let radix_search : int -> int -> int * int =
-    fun depth idx ->
-      check_depth depth;
-      let shift = _BITS * depth in
-      let slot = idx lsr shift in
-      slot, idx - slot lsl shift
-end
-
-include Internal
+let radix_search : int -> int -> int * int =
+  fun depth idx ->
+    check_depth depth;
+    let shift = _BITS * depth in
+    let slot = idx lsr shift in
+    slot, idx - slot lsl shift
 
 (* Max node count allowed to contain such subnodes *)
 let max_nodes_allowed subnodes =
