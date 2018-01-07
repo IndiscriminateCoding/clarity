@@ -9,12 +9,12 @@ module Int = struct
   module Min = struct
     type t = int
     let append = min
-    let zero = min_int
+    let zero = max_int
   end
   module Max = struct
     type t = int
     let append = max
-    let zero = max_int
+    let zero = min_int
   end
   module Sum = struct
     type t = int
