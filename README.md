@@ -40,7 +40,7 @@ let res : string Option.t =
 ```
 * Right folds are also "lazy" by "accumulator" argument of a folding function. Strict right fold is called `foldr'`. This allows for shortcut when function no more needs data. For example, here is `any` function from Foldable module that checks if at least one element of a Foldable satisfies given predicate:
 ```ocaml
-let any p = foldr (fun x a -> p x || a ()) false
+let any p = foldr (fun x a -> p x || a ()) (const false)
 ```
 
 ### Documentation
