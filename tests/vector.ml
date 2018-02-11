@@ -270,3 +270,11 @@ module Bind = struct
  ;; ok "Bind"
 end
 
+module Init = struct
+  for l = 0 to 10 do
+    assert(length (init l (fun _ -> 0)) = l)
+  done
+
+  ;; ok "Init"
+end
+

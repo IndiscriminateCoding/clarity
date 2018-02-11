@@ -552,7 +552,7 @@ let make_pb : unit -> (('a -> unit) * (unit -> 'a t)) =
 let init : type a . int -> (int -> a) -> a t =
   fun l f ->
     let push, build = make_pb () in
-    for i = 0 to l do
+    for i = 1 to l do
       push (f i)
     done;
     build ()
