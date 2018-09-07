@@ -1,5 +1,3 @@
-open Fn
-
 type ('s, 'a) t = 's -> ('s * 'a)
 
 include Monad.Make2 (struct

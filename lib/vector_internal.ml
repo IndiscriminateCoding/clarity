@@ -330,12 +330,12 @@ module Concatenation = struct
       mk_rnode [| l; r |]
     | 1 -> merge l r
     | n ->
-      let li, lv = get_rnode l in
-      let ri, rv = get_rnode r in
+      let _, lv = get_rnode l in
+      let _, rv = get_rnode r in
       assert (Arr.len lv > 0);
       assert (Arr.len rv > 0);
       let intermediate = append_same (rightmost l) (leftmost r) (n - 1) in
-      let ii, iv = get_rnode intermediate in
+      let _, iv = get_rnode intermediate in
       let overall = node_len l + node_len r - 2 + node_len intermediate in
       let ll, lr =
         if overall > _BRANCHING
@@ -380,7 +380,7 @@ module Concatenation = struct
         | _ when dl < dr -> append_same (add_layers l (dr - dl)) r dr
         | _ (* when dl > dr *) -> append_same l (add_layers r (dl - dr)) dl in
       match res with
-      | R_node (is, vs) when Arr.len vs = 1 ->
+      | R_node (_, vs) when Arr.len vs = 1 ->
         Arr.get vs 0
       | _ -> res
 end

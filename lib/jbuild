@@ -1,6 +1,0 @@
-(jbuild_version 1)
-(library
- ((name clarity)
-  (public_name clarity)
-  (flags (-w +44+45 -strict-sequence -principal))))
-

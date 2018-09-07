@@ -1,11 +1,11 @@
 build:
-	jbuilder build
+	dune build
 
 install:
-	jbuilder install
+	dune install
 
 uninstall:
-	jbuilder uninstall
+	dune uninstall
 
 doc:
 	ocamlbuild -I lib lib.docdir/index.html
@@ -15,7 +15,6 @@ clean:
 	rm -rf _build/ lib.docdir clarity.install lib/.merlin
 
 tests: clean
-	jbuilder runtest --no-buffer
+	dune runtest --no-buffer
 
 .PHONY: build install uninstall doc clean tests
-

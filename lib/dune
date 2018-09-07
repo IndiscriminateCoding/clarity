@@ -1,0 +1,5 @@
+(library
+  (name clarity)
+  (public_name clarity)
+  (ocamlc_flags (-w +44+45 -strict-sequence -principal))
+  (ocamlopt_flags (-O2 -w +44+45 -strict-sequence -principal)))

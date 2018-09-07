@@ -1,7 +1,9 @@
-# jbuilder files
+# dune files
 _build/
 clarity.install
 */.merlin
 
 # documentation dir
 lib.docdir
+
+.vscode/

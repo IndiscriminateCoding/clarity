@@ -1,5 +1,5 @@
 opam-version: "1.2"
-version: "0.3.0"
+version: "0.3.1"
 maintainer: "joyprophecy@gmail.com"
 author: "joyprophecy@gmail.com"
 homepage: "https://github.com/IndiscriminateCoding/clarity"
@@ -7,8 +7,7 @@ bug-reports: "https://github.com/IndiscriminateCoding/clarity/issues"
 dev-repo: "https://github.com/IndiscriminateCoding/clarity.git"
 license: "BSD3"
 available: [ ocaml-version >= "4.04.0" ]
-depends: [ "jbuilder" {build} "ocamlfind" {build} ]
+depends: [ "dune" {build} ]
 build: [
-  [ "jbuilder" "build" ]
+  [ "dune" "build" ]
 ]
-
