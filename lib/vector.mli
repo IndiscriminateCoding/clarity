@@ -4,7 +4,28 @@
   operations like getting element / updating at index, appending and
   splitting. *)
 
-type 'a t
+type _ t
+
+(** Efficient construction of vectors using mutable, one-by-one appending of elements *)
+module Builder : sig
+  type 'a vector = 'a t
+  type _ t
+
+  (** Creates new empty builder *)
+  val empty : unit -> 'a t
+
+  (** Create copy of this builder *)
+  val copy : 'a t -> 'a t
+
+  (** Put element to builder *)
+  val put : 'a t -> 'a -> unit
+
+  (** Clear builder *)
+  val clear : 'a t -> unit
+
+  (** Get vector of current elements in builder *)
+  val result : 'a t -> 'a vector
+end
 
 exception Out_of_bounds of { index : int; size : int }
 

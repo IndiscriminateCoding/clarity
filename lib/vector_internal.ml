@@ -511,8 +511,45 @@ let rec iter f = function
   | Leaf x -> Arr.iter f x
   | R_node (_, x) | B_node x -> Arr.iter (iter f) x
 
-let make_pb : unit -> (('a -> unit) * (unit -> 'a t)) =
-  fun () ->
+module Builder = struct
+  type 'a vector = 'a t
+  type 'a chunk =
+    { mutable cnt : int
+    ; vec : 'a vector
+    }
+  type 'a t = 'a chunk list ref
+
+  let copy : 'a t -> 'a t = fun x ->
+    match !x with
+    | [] -> ref []
+    | { cnt; vec } :: t -> ref ({ cnt = cnt; vec = vec } :: t)
+
+  let rec push_node n (x : 'a t) : unit =
+    match !x with
+    | [] -> x := [ { cnt = 1; vec = B_node (Arr.make _BRANCHING n) } ]
+    | { cnt; vec = B_node arr } as h :: _ when cnt < _BRANCHING ->
+      Arr.set arr cnt n;
+      h.cnt <- cnt + 1
+    | { cnt; vec } :: t ->
+      assert (cnt = _BRANCHING);
+      let tail = ref t in
+      push_node vec tail;
+      x := { cnt = 1; vec = B_node (Arr.make _BRANCHING n) } :: !tail
+
+  let put (x : 'a t) e : unit =
+    match !x with
+    | [] ->
+      x := [{ cnt = 1; vec = Leaf (Arr.make _BRANCHING e) }]
+    | { cnt; vec = Leaf arr } as h :: _ when cnt < _BRANCHING ->
+      Arr.set arr cnt e;
+      h.cnt <- cnt + 1
+    | { cnt; vec } :: t ->
+      assert (cnt = _BRANCHING);
+      let tail = ref t in
+      push_node vec tail;
+      x := { cnt = 1; vec = Leaf (Arr.make _BRANCHING e) } :: !tail
+
+  let rec result (x : 'a t) : 'a vector =
     let realloc_array a n =
       assert (Arr.len a > n);
       let res = Arr.make n (Arr.get a 0) in
@@ -521,41 +558,29 @@ let make_pb : unit -> (('a -> unit) * (unit -> 'a t)) =
       done;
       res in
     let realloc = function
-    | sz, n when sz = _BRANCHING -> n
-    | sz, Leaf x -> Leaf (realloc_array x sz)
-    | sz, B_node x -> B_node (realloc_array x sz)
-    | _ -> assert false in
-    let rec push_node n = function
-    | [] -> [ 1, B_node (Arr.make _BRANCHING n) ]
-    | (sz, node) :: t when sz < _BRANCHING ->
-      Arr.set (get_bnode node) sz n;
-      (sz + 1, node) :: t
-    | (sz, node) :: t ->
-      assert (sz = _BRANCHING);
-      (1, B_node (Arr.make _BRANCHING n)) :: push_node node t in
-    let push_elem e = function
-    | [] -> [ 1, Leaf (Arr.make _BRANCHING e) ]
-    | (sz, node) :: t when sz < _BRANCHING ->
-      Arr.set (get_leaf node) sz e;
-      (sz + 1, node) :: t
-    | (sz, node) :: t ->
-      assert (sz = _BRANCHING);
-      (1, Leaf (Arr.make _BRANCHING e)) :: push_node node t in
-    let res = ref [] in
-    let push x = res := push_elem x !res in
-    let rec build = function
-    | [] -> empty
-    | [ x ] -> realloc x
-    | h :: t -> build (push_node (realloc h) t) in
-    push, fun () -> build !res
+      | { cnt; vec } when cnt = _BRANCHING -> vec
+      | { cnt; vec = Leaf x } -> Leaf (realloc_array x cnt)
+      | { cnt; vec = B_node x } -> B_node (realloc_array x cnt)
+      | _ -> assert false in
+  match !x with
+  | [] -> empty
+  | [ x ] -> realloc x
+  | h :: t ->
+    let tail = ref t in
+    push_node (realloc h) tail;
+    result tail
+
+  let empty () = ref []
+  let clear b = b := []
+end
 
 let init : type a . int -> (int -> a) -> a t =
   fun l f ->
-    let push, build = make_pb () in
+    let b = Builder.empty () in
     for i = 1 to l do
-      push (f i)
+      Builder.put b (f i)
     done;
-    build ()
+    Builder.result b
 
 include Monad.Make(struct
   type nonrec 'a t = 'a t
@@ -563,17 +588,17 @@ include Monad.Make(struct
   let pure x = Leaf [| x |]
 
   let bind f x =
-    let push, build = make_pb () in
-    iter (fun y -> iter push (f y)) x;
-    build ()
+    let b = Builder.empty () in
+    iter (fun y -> iter (Builder.put b) (f y)) x;
+    Builder.result b
 
   let ap f x =
     if f = empty
     then empty
     else let x = x () in
-      let push, build = make_pb () in
-      iter (fun f -> iter (push % f) x) f;
-      build ()
+      let b = Builder.empty () in
+      iter (fun f -> iter (Builder.put b % f) x) f;
+      Builder.result b
 
   let map f x = ap (pure f) (const x)
 end)
@@ -596,9 +621,9 @@ let rec foldr' f a = function
 
 let to_list x = foldr' Clarity_list._Cons [] x
 let of_list x =
-  let push, build = make_pb () in
-  Clarity_list.iter push x;
-  build ()
+  let b = Builder.empty () in
+  Clarity_list.iter (Builder.put b) x;
+  Builder.result b
 
 include Align.Make(struct
   type nonrec 'a t = 'a t
@@ -607,18 +632,18 @@ include Align.Make(struct
     let open These in
     let la = length a in
     let lb = length b in
-    let push, build = make_pb () in
+    let build = Builder.empty () in
     for i = 0 to min la lb - 1 do
-      push (f (_Both (get a i) (get b i)))
+      Builder.put build (f (_Both (get a i) (get b i)))
     done;
     if la > lb
     then for i = lb to la - 1 do
-        push @@ f @@ Left (get a i)
+        Builder.put build @@ f @@ Left (get a i)
     done else if la < lb
     then for i = la to lb - 1 do
-        push @@ f @@ Right (get b i)
+        Builder.put build @@ f @@ Right (get b i)
     done;
-    build ()
+    Builder.result build
 end)
 
 module A3 (A : Applicative.Basic3) = Traversable.Make3(struct
