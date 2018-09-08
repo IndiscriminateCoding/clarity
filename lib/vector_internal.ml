@@ -387,6 +387,9 @@ end
 
 let append = Concatenation.append
 
+let cons x v = append (Leaf [| x |]) v
+let snoc v x = append v (Leaf [| x |])
+
 exception Out_of_bounds of { index : int; size : int }
 
 let check_bounds n index =

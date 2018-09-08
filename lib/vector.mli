@@ -11,19 +11,19 @@ module Builder : sig
   type 'a vector = 'a t
   type _ t
 
-  (** Creates new empty builder *)
+  (** Creates new empty builder. *)
   val empty : unit -> 'a t
 
-  (** Create copy of this builder *)
+  (** Create copy of this builder. *)
   val copy : 'a t -> 'a t
 
-  (** Put element to builder *)
+  (** Put element to builder. *)
   val put : 'a t -> 'a -> unit
 
-  (** Clear builder *)
+  (** Clear builder. *)
   val clear : 'a t -> unit
 
-  (** Get vector of current elements in builder *)
+  (** Get vector of current elements in builder. *)
   val result : 'a t -> 'a vector
 end
 
@@ -31,6 +31,12 @@ exception Out_of_bounds of { index : int; size : int }
 
 (** Empty vector. *)
 val empty : 'a t
+
+(** Prepend one element to vector. "Effectively constant". *)
+val cons : 'a -> 'a t -> 'a t
+
+(** Apppend one element to vector. "Effectively constant". *)
+val snoc : 'a t -> 'a -> 'a t
 
 (** The length of a vector. *)
 val length : 'a t -> int
