@@ -1,6 +1,6 @@
 open Printf
 
-open Clarity
+open! Clarity
 open Internal.Vector
 
 module A = Array
