@@ -30,4 +30,5 @@ let fold' s n = fold s (const n)
 
 let get_or_else x = fold' id x
 
-let to_either e = fold' Either._Right (Either.Left e)
+let to_right e = fold' Either._Right (Either.Left e)
+let to_left e = fold' Either._Left (Either.Right e)
