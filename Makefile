@@ -8,7 +8,7 @@ uninstall:
 	dune uninstall
 
 doc:
-	ocamlbuild -I lib lib.docdir/index.html
+	ocamlbuild -I lib -I lib/classes -I lib/types -I lib/vector lib.docdir/index.html
 	cp style.css lib.docdir/
 
 clean:
