@@ -32,3 +32,5 @@ let get_or_else x = fold' id x
 
 let to_right e = fold' Either._Right (Either.Left e)
 let to_left e = fold' Either._Left (Either.Right e)
+
+let iter f = fold' f ()
