@@ -9,7 +9,6 @@ uninstall:
 
 doc:
 	ocamlbuild -I lib -I lib/classes -I lib/types -I lib/vector lib.docdir/index.html
-	cp style.css lib.docdir/
 
 clean:
 	rm -rf _build/ lib.docdir clarity.install lib/.merlin
