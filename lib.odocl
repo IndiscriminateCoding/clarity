@@ -9,13 +9,9 @@ Id
 Monad
 Monoid
 Option
-Reader
 Semigroup
-State
 These
 Traversable
 Validation
 Vector
 Void
-Writer
-
