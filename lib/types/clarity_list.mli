@@ -13,9 +13,6 @@ val filter : ('a -> bool) -> 'a t -> 'a t
 val intersperse : 'a -> 'a list -> 'a list
 
 val rev : 'a t -> 'a t
-val rev_append : 'a t -> 'a t -> 'a t
-val rev_map : ('a -> 'b) -> 'a t -> 'b t
-val rev_mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
 
 (**
   Stable sort with supplied comparision function, default is
