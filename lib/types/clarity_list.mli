@@ -14,12 +14,6 @@ val intersperse : 'a -> 'a list -> 'a list
 
 val rev : 'a t -> 'a t
 
-(**
-  Stable sort with supplied comparision function, default is
-  Pervasives.compare
-  *)
-val sort : ?cmp:('a -> 'a -> int) -> 'a t -> 'a t
-
 include Monad.S with type 'a t := 'a t
 include Foldable.S with type 'a t := 'a t
 include Align.S with type 'a t := 'a t

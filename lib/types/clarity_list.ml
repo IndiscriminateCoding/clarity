@@ -13,7 +13,6 @@ let rev_mapi f l =
   let i = ref (-1) in
   rev_map (fun x -> incr i; f !i x) l
 let length = List.length
-let sort ?(cmp = compare) = List.stable_sort cmp
 let append l = rev_append (rev l)
 let mapi f = rev_mapi f % rev
 let filter = List.filter
