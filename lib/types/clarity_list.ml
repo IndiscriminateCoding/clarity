@@ -48,13 +48,12 @@ end)
 include Align.Make(struct
   type nonrec 'a t = 'a t
 
-  let align_with f a b =
-    let open These in
+  let align_as both left right a b =
     let rec loop a = function
       | [], [] -> a
-      | [] as l, x :: r -> loop (f (Right x) :: a) (l, r)
-      | x :: l, ([] as r) -> loop (f (Left x) :: a) (l, r)
-      | x :: l, y :: r -> loop (f (_Both x y) :: a) (l, r) in
+      | [] as l, x :: r -> loop (right x :: a) (l, r)
+      | x :: l, ([] as r) -> loop (left x :: a) (l, r)
+      | x :: l, y :: r -> loop (both x y :: a) (l, r) in
     rev (loop [] (a, b))
 end)
 

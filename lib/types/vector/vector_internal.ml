@@ -631,20 +631,19 @@ let of_list x =
 include Align.Make(struct
   type nonrec 'a t = 'a t
 
-  let align_with f a b =
-    let open These in
+  let align_as both left right a b =
     let la = length a in
     let lb = length b in
     let build = Builder.empty () in
     for i = 0 to min la lb - 1 do
-      Builder.put build (f (_Both (get a i) (get b i)))
+      Builder.put build (both (get a i) (get b i))
     done;
     if la > lb
     then for i = lb to la - 1 do
-        Builder.put build @@ f @@ Left (get a i)
+        Builder.put build @@ left (get a i)
     done else if la < lb
     then for i = la to lb - 1 do
-        Builder.put build @@ f @@ Right (get b i)
+        Builder.put build @@ right (get b i)
     done;
     Builder.result build
 end)
